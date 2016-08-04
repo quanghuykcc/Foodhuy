@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.devlin.core.viewmodel.LoginViewModel"/>
+
+    </data>
+
+    <android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#205081"
+        tools:context="com.devlin.foodhuy.activities.LoginActivity">
+
+        <include layout="@layout/toolbar_transparent"/>
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                android:id="@+id/linearLayout">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#ffffff"
+                    android:textSize="35sp"
+                    android:layout_marginBottom="20dp"
+                    android:text="Foodhuy"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:background="#ffffff"
+                    android:hint="Username"
+                    android:padding="10dp"
+                    android:text="@={viewModel.user.userName}"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_height="wrap_content"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:background="#ffffff"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:text="@={viewModel.user.password}"
+                    android:textSize="13sp"
+                    android:padding="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_height="wrap_content"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Đăng nhập"
+                    android:textColor="#ffffff"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:background="#3B7FC4"
+                    android:onClick="@{() -> viewModel.logIn(viewModel.user)}"
+                    android:layout_below="@+id/linearLayout"
+                    android:layout_centerHorizontal="true"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#aa0000"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:textSize="12sp"
+                    android:text="@{viewModel.error}"
+                    android:textStyle="italic"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:gravity="center"
+                    android:textSize="16sp"
+                    android:onClick="@{() -> viewModel.showRegisterLayout()}"
+                    android:textStyle="bold"
+                    android:textColor="#ffffff"
+                    android:text="Đăng ký"/>
+            </LinearLayout>
+
+
+        </RelativeLayout>
+    </android.support.design.widget.CoordinatorLayout>
+
+</layout>
+
+

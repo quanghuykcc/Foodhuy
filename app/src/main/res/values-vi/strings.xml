@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Foodhuy</string>
+
+    <string name="action_settings">Cài đặt</string>
+
+    <string name="category">Danh mục</string>
+    <string name="favorite">Yêu thích</string>
+    <string name="login">Đăng nhập</string>
+    <string name="latest">Mới nhất</string>
+    <string name="register">Đăng ký</string>
+
+</resources>
