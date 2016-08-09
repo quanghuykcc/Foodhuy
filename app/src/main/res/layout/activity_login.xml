@@ -46,9 +46,9 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:background="#ffffff"
-                    android:hint="Username"
+                    android:hint="Email"
                     android:padding="10dp"
-                    android:text="@={viewModel.user.userName}"
+                    android:text="@={viewModel.user.email}"
                     android:textSize="15sp"
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content"/>
@@ -75,13 +75,14 @@
                     android:onClick="@{() -> viewModel.logIn(viewModel.user)}"
                     android:layout_below="@+id/linearLayout"
                     android:layout_centerHorizontal="true"/>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#aa0000"
+                    android:textColor="#ffffff"
                     android:gravity="center"
-                    android:layout_marginTop="10dp"
-                    android:textSize="12sp"
+                    android:layout_marginTop="15dp"
+                    android:textSize="13sp"
                     android:text="@{viewModel.error}"
                     android:textStyle="italic"/>
 

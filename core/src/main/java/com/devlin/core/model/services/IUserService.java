@@ -21,4 +21,9 @@ public interface IUserService {
 
     void register(User user, ICallback<Boolean> callback);
 
+    void addFavoriteRestaurant(User user, Restaurant restaurant, ICallback<Boolean> callback);
+
+    void removeFavoriteRestaurant(User user, Restaurant restaurant, ICallback<Boolean> callback);
+
+    void loadFavoriteRestaurants(User user, ICallback<List<Restaurant>> callback);
 }

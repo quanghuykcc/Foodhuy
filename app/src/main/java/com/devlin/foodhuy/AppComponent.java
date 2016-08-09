@@ -1,11 +1,15 @@
 package com.devlin.foodhuy;
 
 import com.devlin.core.di.ViewModelModule;
+import com.devlin.core.viewmodel.FavoriteRestaurantViewModel;
 import com.devlin.foodhuy.activities.AddRestaurantActivity;
+import com.devlin.foodhuy.activities.CommentActivity;
 import com.devlin.foodhuy.activities.LoginActivity;
 import com.devlin.foodhuy.activities.MainActivity;
 import com.devlin.foodhuy.activities.RegisterActivity;
+import com.devlin.foodhuy.activities.RestaurantActivity;
 import com.devlin.foodhuy.fragments.CategoryFragment;
+import com.devlin.foodhuy.fragments.FavoriteRestaurantFragment;
 import com.devlin.foodhuy.fragments.LatestRestaurantFragment;
 import com.devlin.foodhuy.fragments.RestaurantByCategoryFragment;
 
@@ -28,7 +32,11 @@ public interface AppComponent {
 
     void inject(LoginActivity activity);
 
-    void inject(RegisterActivity registerActivity);
+    void inject(RegisterActivity activity);
+
+    void inject(RestaurantActivity activity);
+
+    void inject(CommentActivity activity);
 
     //endregion
 
@@ -39,6 +47,8 @@ public interface AppComponent {
     void inject(CategoryFragment fragment);
 
     void inject(LatestRestaurantFragment fragment);
+
+    void inject(FavoriteRestaurantFragment fragment);
 
     //endregion
 

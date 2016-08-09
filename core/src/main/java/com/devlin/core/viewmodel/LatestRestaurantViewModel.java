@@ -1,9 +1,16 @@
 package com.devlin.core.viewmodel;
 
 import android.databinding.Bindable;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
+import com.devlin.core.R;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.services.storages.RestaurantStorageService;
+import com.devlin.core.model.services.storages.UserStorageService;
+import com.devlin.core.view.Constants;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
 import com.devlin.core.BR;
@@ -18,6 +25,8 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     //region Properties
 
     private RestaurantStorageService mRestaurantStorageService;
+
+    private UserStorageService mUserStorageService;
 
     private List<Restaurant> mRestaurants;
 
@@ -41,10 +50,12 @@ public class LatestRestaurantViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public LatestRestaurantViewModel(INavigator navigator, RestaurantStorageService storageService) {
+    public LatestRestaurantViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService) {
         super(navigator);
 
-        mRestaurantStorageService = storageService;
+        mRestaurantStorageService = restaurantStorageService;
+
+        mUserStorageService = userStorageService;
     }
 
     //endregion
@@ -54,13 +65,14 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     @Override
     public void onCreate() {
         super.onCreate();
+        loadLatestRestaurants();
+        getNavigator().showBusyIndicator("");
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        loadLatestRestaurants();
-        getNavigator().showBusyIndicator("");
+
     }
 
     @Override
@@ -88,9 +100,94 @@ public class LatestRestaurantViewModel extends BaseViewModel {
 
             @Override
             public void onFailure(Throwable t) {
-
+                getNavigator().hideBusyIndicator();
             }
         });
+    }
+
+    private void addFavoriteRestaurant(final View view, Restaurant restaurant) {
+        Log.d("TAG", "ADD FAVORITE RESTAURANT");
+
+        mUserStorageService.addFavoriteRestaurant(getNavigator().getApplication().getLoginUser(), restaurant, new ICallback<Boolean>() {
+            @Override
+            public void onResult(Boolean result) {
+                if (result == true) {
+                    Log.d("TAG", "ADD FAVORITE RESTAURANT SUCCESS");
+                    view.setBackgroundColor(ContextCompat.getColor(getNavigator().getApplication().getCurrentActivity(), R.color.colorPrimary));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e("TAG", "", t);
+            }
+        });
+    }
+
+    private void removeFavoriteRestaurant(final View view, Restaurant restaurant) {
+        Log.d("TAG", "REMOVE FAVORITE RESTAURANT");
+
+        mUserStorageService.removeFavoriteRestaurant(getNavigator().getApplication().getLoginUser(), restaurant, new ICallback<Boolean>() {
+            @Override
+            public void onResult(Boolean result) {
+                Log.d("TAG", "REMOVE FAVORITE RESTAURANT SUCCESS");
+                view.setBackgroundColor(ContextCompat.getColor(getNavigator().getApplication().getCurrentActivity(), R.color.colorWhite));
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e("TAG", "", t);
+            }
+        });
+    }
+
+    public boolean isFavoriteRestaurant(Restaurant restaurant) {
+        if (getNavigator().getApplication().isUserLoggedIn()) {
+            if (getNavigator().getApplication().getLoginUser().getFavoriteRestaurant().contains(restaurant)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    //endregion
+
+    //region Public Methods
+
+    public void handleFavoriteRestaurantViewClick(View view, Restaurant restaurant) {
+
+        if (!getNavigator().getApplication().isUserLoggedIn()) {
+            getNavigator().navigateTo(Constants.LOGIN_PAGE);
+            return;
+        }
+
+        if (!isFavoriteRestaurant(restaurant)) {
+            addFavoriteRestaurant(view, restaurant);
+            return;
+        }
+
+        removeFavoriteRestaurant(view, restaurant);
+    }
+
+    public void showRestaurantDetails(Restaurant restaurant) {
+        getNavigator().navigateTo(Constants.RESTAURANT_DETAIL_PAGE);
+
+        getEventBus().postSticky(restaurant);
+    }
+
+    public void handleCommentViewClick(Restaurant restaurant) {
+        if (getNavigator().getApplication().isUserLoggedIn()) {
+            getNavigator().navigateTo(Constants.COMMENT_PAGE);
+
+            getEventBus().postSticky(restaurant);
+
+            return;
+        }
+        else {
+            getNavigator().navigateTo(Constants.LOGIN_PAGE);
+        }
+
     }
 
     //endregion

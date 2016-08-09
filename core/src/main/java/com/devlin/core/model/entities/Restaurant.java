@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 import java.util.UUID;
+
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -49,6 +51,9 @@ public class Restaurant extends RealmObject {
 
     @SerializedName("is_deleted")
     private boolean mIsDeleted;
+
+    @SerializedName("comments")
+    private RealmList<Comment> mComments;
 
     //endregion
 
@@ -176,6 +181,14 @@ public class Restaurant extends RealmObject {
         mIsDeleted = deleted;
     }
 
+    public RealmList<Comment> getComments() {
+        return mComments;
+    }
+
+    public void setComments(RealmList<Comment> comments) {
+        mComments = comments;
+    }
+
     //endregion
 
     //region Override Methods
@@ -191,6 +204,14 @@ public class Restaurant extends RealmObject {
                 ", mImage='" + mImage + '\'' +
                 ", mContent='" + mContent + '\'' +
                 '}';
+    }
+
+    //endregion
+
+    //region Public Methods
+
+    public String getOpenPeriod() {
+        return getOpenTime() + " - " + getCloseTime();
     }
 
     //endregion

@@ -25,6 +25,10 @@ public abstract class BaseRecyclerViewAdapter<V extends BaseViewModel, T> extend
         notifyDataSetChanged();
     }
 
+    public T getData() {
+        return mData;
+    }
+
     public void setViewModel(V viewModel) {
         mViewModel = viewModel;
     }

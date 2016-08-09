@@ -24,7 +24,7 @@ public class RestaurantByCategoryListAdapter extends BaseRecyclerViewAdapter<Res
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ViewDataBinding viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_restaurant, parent, false);
+        ViewDataBinding viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_restaurant_by_category, parent, false);
         return new ViewHolder(viewDataBinding);
     }
 

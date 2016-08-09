@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="restaurant"
+            type="com.devlin.core.model.entities.Restaurant"/>
+        <variable
+            name="viewModel"
+            type="com.devlin.core.viewmodel.LatestRestaurantViewModel"/>
+    </data>
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_view"
+            android:layout_width="match_parent"
+            android:onClick="@{() -> viewModel.showRestaurantDetails(restaurant)}"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:padding="10dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/restaurantNameTextView"
+                            android:textSize="15sp"
+                            android:textColor="#333333"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:text="@{restaurant.name}" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:textSize="12sp"
+                            android:layout_below="@+id/restaurantNameTextView"
+                            android:text="@{restaurant.address}"
+                            android:layout_alignParentLeft="true"/>
+
+                    </RelativeLayout>
+
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/restaurant_placeholder"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:padding="10dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:id="@+id/restaurantContentTextView"
+                            android:layout_alignParentLeft="true"
+                            android:textSize="12sp"
+                            android:text="@{restaurant.content}" />
+
+                    </RelativeLayout>
+
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:background="@drawable/bg_border"
+                    android:layout_height="2px">
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="7dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:scaleType="centerCrop"
+                            android:id="@+id/image_view_favorite"
+                            android:background="@{viewModel.isFavoriteRestaurant(restaurant)? @color/colorPrimary : @color/colorWhite}"
+                            android:onClick="@{(view) -> viewModel.handleFavoriteRestaurantViewClick(view, restaurant)}"
+                            android:src="@android:drawable/ic_menu_save"
+                            android:layout_marginRight="7dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Lưu lại"
+                            android:textSize="12sp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginRight="30dp"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="@{() -> viewModel.handleCommentViewClick(restaurant)}"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:scaleType="centerCrop"
+                            android:id="@+id/image_view_comment"
+                            android:src="@android:drawable/ic_menu_edit"
+                            android:layout_marginRight="7dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Viết bình luận"
+                            android:textSize="12sp"
+                            android:layout_gravity="center_vertical"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+
+
+        </android.support.v7.widget.CardView>
+</layout>

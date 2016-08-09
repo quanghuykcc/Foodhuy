@@ -3,7 +3,9 @@ package com.devlin.core.model.services.storages;
 import android.util.Log;
 
 import com.devlin.core.model.entities.Category;
+import com.devlin.core.model.entities.Comment;
 import com.devlin.core.model.entities.Restaurant;
+import com.devlin.core.model.entities.User;
 import com.devlin.core.model.services.IRestaurantService;
 import com.devlin.core.view.ICallback;
 
@@ -142,6 +144,37 @@ public class RestaurantStorageService extends  BaseStorageService implements IRe
                 callback.onResult(element);
 
                 restaurants.removeChangeListener(this);
+            }
+        });
+    }
+
+    @Override
+    public void addComment(final Comment comment, final Restaurant restaurant, final ICallback<Boolean> callback) {
+
+        final int restaurantId = restaurant.getId();
+
+        final String userId = comment.getCommenter().getId();
+
+        mRealm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Restaurant restaurant = realm.where(Restaurant.class).equalTo("mId", restaurantId).findFirst();
+
+                User user = realm.where(User.class).equalTo("mId", userId).findFirst();
+
+                comment.setCommenter(user);
+
+                restaurant.getComments().add(comment);
+            }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+                callback.onResult(true);
+            }
+        }, new Realm.Transaction.OnError() {
+            @Override
+            public void onError(Throwable error) {
+                callback.onFailure(error);
             }
         });
     }

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.devlin.core.viewmodel.RestaurantByCategoryViewModel"/>
+            type="com.devlin.core.viewmodel.FavoriteRestaurantViewModel"/>
 
     </data>
 

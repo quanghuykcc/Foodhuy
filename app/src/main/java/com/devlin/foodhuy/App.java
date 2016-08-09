@@ -15,9 +15,11 @@ import com.devlin.core.view.Constants;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
 import com.devlin.foodhuy.activities.AddRestaurantActivity;
+import com.devlin.foodhuy.activities.CommentActivity;
 import com.devlin.foodhuy.activities.LoginActivity;
 import com.devlin.foodhuy.activities.MainActivity;
 import com.devlin.foodhuy.activities.RegisterActivity;
+import com.devlin.foodhuy.activities.RestaurantActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,6 +59,8 @@ public class App extends BaseApplication {
         navigator.configure(Constants.LOGIN_PAGE, LoginActivity.class);
         navigator.configure(Constants.REGISTER_PAGE, RegisterActivity.class);
         navigator.configure(Constants.ADD_RESTAURANT_PAGE, AddRestaurantActivity.class);
+        navigator.configure(Constants.RESTAURANT_DETAIL_PAGE, RestaurantActivity.class);
+        navigator.configure(Constants.COMMENT_PAGE, CommentActivity.class);
 
         sAppComponent = DaggerAppComponent.builder()
                 .appModule(appModule)

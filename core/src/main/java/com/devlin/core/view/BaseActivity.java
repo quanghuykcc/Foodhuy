@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.devlin.core.R;
 import com.devlin.core.viewmodel.BaseViewModel;
+import com.google.common.eventbus.EventBus;
 
 import javax.inject.Inject;
 

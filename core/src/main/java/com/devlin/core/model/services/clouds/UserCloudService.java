@@ -1,5 +1,6 @@
 package com.devlin.core.model.services.clouds;
 
+import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.entities.User;
 import com.devlin.core.model.services.IUserService;
 import com.devlin.core.view.ICallback;
@@ -36,6 +37,21 @@ public class UserCloudService extends BaseCloudService<IUserCloudService> implem
 
     @Override
     public void register(User user, ICallback<Boolean> callback) {
+
+    }
+
+    @Override
+    public void addFavoriteRestaurant(User user, Restaurant restaurant, ICallback<Boolean> callback) {
+
+    }
+
+    @Override
+    public void removeFavoriteRestaurant(User user, Restaurant restaurant, ICallback<Boolean> callback) {
+
+    }
+
+    @Override
+    public void loadFavoriteRestaurants(User user, ICallback<List<Restaurant>> callback) {
 
     }
 }

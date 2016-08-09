@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.devlin.core.viewmodel.CommentViewModel">
+        </variable>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        tools:context="com.devlin.foodhuy.activities.CommentActivity">
+
+        <include layout="@layout/toolbar"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#dddddd"
+                android:padding="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:text="@{viewModel.restaurant.name}"
+                    android:textColor="#333333"
+                    android:textSize="14sp"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="8dp"
+                    android:text="@{viewModel.restaurant.address}"
+                    android:textStyle="italic"
+                    android:textSize="12sp"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+            
+            <EditText
+                android:layout_width="match_parent"
+                android:hint="Tiêu đề (không bắt buộc)"
+                android:padding="16dp"
+                android:textSize="14sp"
+                android:background="@android:color/transparent"
+                android:text="@={viewModel.comment.title}"
+                android:layout_height="wrap_content"/>
+
+            <include layout="@layout/divider"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:hint="Viết trên 100 từ, đúng chính tả, ngôn từ văn hóa, không spam... để được duyệt điểm thưởng"
+                android:padding="16dp"
+                android:textSize="14sp"
+                android:gravity="top|left"
+                android:background="@android:color/transparent"
+                android:text="@={viewModel.comment.content}"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>
+

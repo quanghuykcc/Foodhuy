@@ -1,9 +1,13 @@
 package com.devlin.core.model.entities;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.Date;
 import java.util.UUID;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -20,6 +24,10 @@ public class User extends RealmObject {
 
     private String mPassword;
 
+    @Ignore
+    @Expose
+    private String mRetypePassword;
+
     private String mEmail;
 
     private Date mCreatedAt;
@@ -28,9 +36,20 @@ public class User extends RealmObject {
 
     private boolean mIsDeleted;
 
+    @Expose
+    private RealmList<Restaurant> mFavoriteRestaurant;
+
     //endregion
 
     //region Getter and Setter
+
+    public RealmList<Restaurant> getFavoriteRestaurant() {
+        return mFavoriteRestaurant;
+    }
+
+    public void setFavoriteRestaurant(RealmList<Restaurant> favoriteRestaurant) {
+        mFavoriteRestaurant = favoriteRestaurant;
+    }
 
     public String getId() {
         return mId;
@@ -88,12 +107,37 @@ public class User extends RealmObject {
         mIsDeleted = deleted;
     }
 
+    public String getRetypePassword() {
+        return mRetypePassword;
+    }
+
+    public void setRetypePassword(String retypePassword) {
+        mRetypePassword = retypePassword;
+    }
+
     //endregion
 
     //region Constructors
 
     public User() {
         super();
+    }
+
+    //endregion
+
+    //region Override Methods
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "mId='" + mId + '\'' +
+                ", mUserName='" + mUserName + '\'' +
+                ", mPassword='" + mPassword + '\'' +
+                ", mEmail='" + mEmail + '\'' +
+                ", mCreatedAt=" + mCreatedAt +
+                ", mUpdatedAt=" + mUpdatedAt +
+                ", mIsDeleted=" + mIsDeleted +
+                '}';
     }
 
     //endregion

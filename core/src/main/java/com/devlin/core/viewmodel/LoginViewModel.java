@@ -1,6 +1,7 @@
 package com.devlin.core.viewmodel;
 
 import android.databinding.Bindable;
+import android.util.Log;
 
 import com.devlin.core.BR;
 import com.devlin.core.model.entities.User;
@@ -15,6 +16,8 @@ import com.devlin.core.view.INavigator;
 public class LoginViewModel extends BaseViewModel {
 
     //region Properties
+
+    private static final String TAG = "LoginViewModel";
 
     private UserStorageService mUserStorageService;
 
@@ -58,7 +61,6 @@ public class LoginViewModel extends BaseViewModel {
 
         mUserStorageService = storageService;
 
-        mUser = new User();
     }
 
     //endregion
@@ -68,6 +70,10 @@ public class LoginViewModel extends BaseViewModel {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        mUser = new User();
+        mUser.setEmail("");
+        mUser.setPassword("");
     }
 
     @Override
@@ -83,6 +89,27 @@ public class LoginViewModel extends BaseViewModel {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        mUser = null;
+        mError = null;
+    }
+
+    //endregion
+
+    //region Private Methods
+
+    private boolean validateUser(User user) {
+        if (user.getEmail().trim().equals("")) {
+            setError("Chưa nhập Email");
+            return false;
+        }
+
+        if (user.getPassword().trim().equals("")) {
+            setError("Chưa nhập mật khẩu");
+            return false;
+        }
+
+        return true;
     }
 
     //endregion
@@ -94,22 +121,37 @@ public class LoginViewModel extends BaseViewModel {
     }
 
     public void logIn(User user) {
-        mUserStorageService.logIn(user, new ICallback<User>() {
-            @Override
-            public void onResult(User result) {
-                if (result != null) {
-                    getNavigator().goBack();
-                }
-                else {
-                    setError("Tài khoản hoặc mật khẩu không đúng");
-                }
-            }
 
-            @Override
-            public void onFailure(Throwable t) {
+        if (validateUser(user)) {
+            getNavigator().showBusyIndicator("Đăng nhập");
 
-            }
-        });
+
+            mUserStorageService.logIn(user, new ICallback<User>() {
+                @Override
+                public void onResult(User result) {
+                    if (result.isLoaded() && result.isValid()) {
+                        getNavigator().hideBusyIndicator();
+
+                        getEventBus().post(result);
+
+                        getNavigator().getApplication().setLoginUser(result);
+
+                        getNavigator().goBack();
+                    }
+                    else {
+                        setError("Tài khoản hoặc mật khẩu không đúng");
+                        getNavigator().hideBusyIndicator();
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    getNavigator().hideBusyIndicator();
+                }
+            });
+        }
+
+
     }
 
     //endregion

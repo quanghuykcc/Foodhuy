@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
+import com.devlin.core.model.entities.User;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -16,6 +18,8 @@ public class BaseApplication extends Application implements  Application.Activit
 
     private Activity mCurrentActivity;
 
+    private User mLoginUser;
+
     //endregion
 
     //region Setters and Getters
@@ -26,6 +30,18 @@ public class BaseApplication extends Application implements  Application.Activit
 
     public boolean isCurrentActivityAvailable() {
         return mCurrentActivity != null;
+    }
+
+    public User getLoginUser() {
+        return mLoginUser;
+    }
+
+    public boolean isUserLoggedIn() {
+        return mLoginUser != null;
+    }
+
+    public void setLoginUser(User loginUser) {
+        this.mLoginUser = loginUser;
     }
 
     //endregion

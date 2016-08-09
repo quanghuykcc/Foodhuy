@@ -1,6 +1,7 @@
 package com.devlin.foodhuy.activities;
 
 import android.app.Dialog;
+import android.databinding.DataBindingUtil;
 import android.support.design.widget.NavigationView;
 import android.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -8,6 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -19,8 +21,10 @@ import com.devlin.foodhuy.App;
 import com.devlin.foodhuy.BR;
 import com.devlin.foodhuy.R;
 import com.devlin.foodhuy.databinding.ActivityMainBinding;
+import com.devlin.foodhuy.databinding.NavHeaderBinding;
 import com.devlin.foodhuy.dialogs.AddDialog;
 import com.devlin.foodhuy.fragments.CategoryFragment;
+import com.devlin.foodhuy.fragments.FavoriteRestaurantFragment;
 import com.devlin.foodhuy.fragments.LatestRestaurantFragment;
 import com.devlin.foodhuy.fragments.RestaurantByCategoryFragment;
 
@@ -56,6 +60,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewMode
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        NavHeaderBinding navHeaderBinding = NavHeaderBinding.inflate(LayoutInflater.from(navigationView.getContext()));
+        navHeaderBinding.setVariable(BR.viewModel, mViewModel);
+        navigationView.addHeaderView(navHeaderBinding.getRoot());
+        navHeaderBinding.executePendingBindings();
 
         mViewModel.getNavigator().navigateTo(R.id.main_content, new LatestRestaurantFragment());
     }
@@ -127,8 +136,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewMode
             fragment = new CategoryFragment();
         }
         else if (id == R.id.nav_favorite) {
-            mViewModel.getNavigator().navigateTo(Constants.LOGIN_PAGE);
-            return true;
+            if (mViewModel.getNavigator().getApplication().isUserLoggedIn()) {
+                fragment = new FavoriteRestaurantFragment();
+            }
+            else {
+                mViewModel.getNavigator().navigateTo(Constants.LOGIN_PAGE);
+            }
         }
         else if (id == R.id.nav_manage) {
 

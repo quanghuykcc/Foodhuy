@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.devlin.core.viewmodel.RestaurantViewModel"></variable>
+
+    </data>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.devlin.foodhuy.activities.RestaurantActivity">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="250dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/restaurant_placeholder"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:padding="16dp"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:text="@{viewModel.restaurant.name}"
+                            android:textColor="@color/colorTextPrimary"
+                            android:layout_height="wrap_content"/>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2px"
+                            android:background="@drawable/bg_border">
+                        </View>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            android:textSize="12sp"
+                            android:text="@{viewModel.restaurant.content}"
+                            android:layout_height="wrap_content"/>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2px"
+                            android:background="@drawable/bg_border">
+                        </View>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:textSize="16sp"
+                                android:paddingTop="16dp"
+                                android:paddingLeft="16dp"
+                                android:id="@+id/text_view_open_status"
+                                android:text="ĐANG MỞ CỬA"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentTop="true"
+                                android:layout_height="wrap_content"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:textSize="14sp"
+                                android:paddingLeft="16sp"
+                                android:paddingBottom="16sp"
+                                android:id="@+id/text_view_open_and_close_time"
+                                android:text="@{viewModel.restaurant.getOpenPeriod()}"
+                                android:layout_below="@id/text_view_open_status"
+                                android:layout_height="wrap_content"/>
+
+                            <Button
+                                android:layout_width="wrap_content"
+                                android:padding="16dp"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:layout_margin="16sp"
+                                android:text="Gọi"
+                                android:textColor="@color/colorWhite"
+                                android:background="#00bb00"
+                                android:layout_height="wrap_content"/>
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="6dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:padding="16sp"
+                        android:textSize="12sp"
+                        android:text="@{viewModel.restaurant.address}"
+                        android:layout_height="wrap_content"/>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="6dp"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:padding="16dp"
+                        android:layout_height="wrap_content">
+
+                        
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:id="@+id/text_view_total_comment"
+                            android:textStyle="bold"
+                            android:layout_alignParentLeft="true"
+                            android:text="703 Bình luận"/>
+
+                        <FrameLayout
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_rating">
+
+                            </View>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:textSize="10sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorWhite"
+                                android:id="@+id/text_view_rating_average"
+                                android:text="7.8"/>
+
+                        </FrameLayout>
+
+                    </RelativeLayout>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/comment_recycler_view"
+                        app:items="@{viewModel.restaurant.comments}">
+
+                    </android.support.v7.widget.RecyclerView>
+
+                </android.support.v7.widget.CardView>
+
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <include layout="@layout/toolbar_transparent"/>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+</layout>
+
+

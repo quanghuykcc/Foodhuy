@@ -1,6 +1,7 @@
 package com.devlin.core.model.services;
 
 import com.devlin.core.model.entities.Category;
+import com.devlin.core.model.entities.Comment;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.view.ICallback;
 
@@ -27,5 +28,7 @@ public interface IRestaurantService {
     void getLatestRestaurants(ICallback<List<Restaurant>> callback);
 
     void getRestaurantsByCategory(Category category, ICallback<List<Restaurant>> callback);
+
+    void addComment(Comment comment, Restaurant restaurant, ICallback<Boolean> callback);
 
 }

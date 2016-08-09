@@ -1,14 +1,28 @@
 package com.devlin.core.viewmodel;
 
+import android.databinding.Bindable;
+import android.util.Log;
+
+import com.devlin.core.BR;
+import com.devlin.core.model.entities.User;
 import com.devlin.core.view.INavigator;
-import com.devlin.core.view.Navigator;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Created by Administrator on 7/26/2016.
  */
 public class MainViewModel extends BaseViewModel {
+
+    //region Properties
+
+    private static final String TAG = "MainViewModel";
+
+    private User mUser;
+
+    //endregion
 
     //region Constructors
 
@@ -30,6 +44,17 @@ public class MainViewModel extends BaseViewModel {
         return super.getEventBus();
     }
 
+    @Bindable
+    public User getUser() {
+        return mUser;
+    }
+
+    public void setUser(User user) {
+        this.mUser = user;
+
+        notifyPropertyChanged(BR.user);
+    }
+
     //endregion
 
     //region Lifecycle
@@ -37,6 +62,8 @@ public class MainViewModel extends BaseViewModel {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        getEventBus().register(this);
     }
 
     @Override
@@ -52,8 +79,25 @@ public class MainViewModel extends BaseViewModel {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        getEventBus().unregister(this);
     }
 
     //endregion
+
+    //region Subcribes Methods
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(User loginUser) {
+        Log.d(TAG, loginUser.getUserName());
+
+        setUser(loginUser);
+    }
+
+    //endregion
+
+
+
+
 
 }
