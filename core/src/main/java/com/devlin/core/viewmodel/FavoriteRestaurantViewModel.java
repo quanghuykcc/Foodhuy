@@ -12,6 +12,7 @@ import com.devlin.core.model.entities.User;
 import com.devlin.core.model.services.storages.RestaurantStorageService;
 import com.devlin.core.model.services.storages.UserStorageService;
 import com.devlin.core.view.BaseRecyclerViewAdapter;
+import com.devlin.core.view.Constants;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
 
@@ -138,4 +139,24 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
     }
 
     //endregion
+
+    public void showRestaurantDetails(Restaurant restaurant) {
+        getNavigator().navigateTo(Constants.RESTAURANT_DETAIL_PAGE);
+
+        getEventBus().postSticky(restaurant);
+    }
+
+    public void handleCommentViewClick(Restaurant restaurant) {
+        if (getNavigator().getApplication().isUserLoggedIn()) {
+            getNavigator().navigateTo(Constants.COMMENT_PAGE);
+
+            getEventBus().postSticky(restaurant);
+
+            return;
+        }
+        else {
+            getNavigator().navigateTo(Constants.LOGIN_PAGE);
+        }
+
+    }
 }

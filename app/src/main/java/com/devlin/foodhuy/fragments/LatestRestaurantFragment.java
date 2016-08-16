@@ -56,7 +56,7 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        Drawable dividerDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.divider);
+        Drawable dividerDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.divider_restaurant);
         RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(dividerDrawable);
 
         recyclerView.addItemDecoration(dividerItemDecoration);

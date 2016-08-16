@@ -7,7 +7,7 @@ public abstract class BaseCloudService<T> {
 
     //region Properties
 
-    T mICloudService;
+    protected T mICloudService;
 
     //endregion
 

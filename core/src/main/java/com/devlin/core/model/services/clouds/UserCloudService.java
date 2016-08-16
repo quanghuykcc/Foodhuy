@@ -16,6 +16,10 @@ import retrofit2.Response;
  */
 public class UserCloudService extends BaseCloudService<IUserCloudService> implements IUserService {
 
+    public UserCloudService(IUserCloudService iUserCloudService) {
+        mICloudService = iUserCloudService;
+    }
+
     @Override
     public void logIn(User user, final ICallback<User> callback) {
         getICloudService().logIn(user.getUserName(), user.getPassword()).enqueue(new Callback<User>() {

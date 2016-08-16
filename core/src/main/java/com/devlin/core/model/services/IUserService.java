@@ -2,15 +2,9 @@ package com.devlin.core.model.services;
 
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.entities.User;
-import com.devlin.core.model.responses.ResponseRestaurant;
 import com.devlin.core.view.ICallback;
 
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
 
 /**
  * Created by Administrator on 7/25/2016.

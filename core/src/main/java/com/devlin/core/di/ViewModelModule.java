@@ -1,5 +1,7 @@
 package com.devlin.core.di;
 
+import com.devlin.core.model.services.clouds.RestaurantCloudService;
+import com.devlin.core.model.services.clouds.UserCloudService;
 import com.devlin.core.model.services.storages.CategoryStorageService;
 import com.devlin.core.model.services.storages.RestaurantStorageService;
 import com.devlin.core.model.services.storages.UserStorageService;
@@ -67,8 +69,8 @@ public class ViewModelModule {
 
     @Provides
     @Singleton
-    LatestRestaurantViewModel providesLatestRestaurantViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService) {
-        return new LatestRestaurantViewModel(navigator, restaurantStorageService, userStorageService);
+    LatestRestaurantViewModel providesLatestRestaurantViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService, RestaurantCloudService restaurantCloudService) {
+        return new LatestRestaurantViewModel(navigator, restaurantStorageService, userStorageService, restaurantCloudService);
     }
 
     @Provides

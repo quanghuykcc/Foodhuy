@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import com.devlin.foodhuy.BR;
 import com.devlin.foodhuy.R;
 import com.devlin.foodhuy.adapters.DividerItemDecoration;
 import com.devlin.foodhuy.adapters.FavoriteRestaurantListAdapter;
-import com.devlin.foodhuy.adapters.LatestRestaurantListAdapter;
 import com.devlin.foodhuy.databinding.FragmentFavoriteRestaurantBinding;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -66,7 +64,7 @@ public class FavoriteRestaurantFragment extends BaseFragment<FragmentFavoriteRes
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        Drawable dividerDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.divider);
+        Drawable dividerDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.divider_restaurant);
         RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(dividerDrawable);
 
         mRecyclerView.addItemDecoration(dividerItemDecoration);

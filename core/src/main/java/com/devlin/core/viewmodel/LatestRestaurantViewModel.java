@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import com.devlin.core.R;
 import com.devlin.core.model.entities.Restaurant;
+import com.devlin.core.model.services.clouds.RestaurantCloudService;
 import com.devlin.core.model.services.storages.RestaurantStorageService;
 import com.devlin.core.model.services.storages.UserStorageService;
 import com.devlin.core.view.Constants;
@@ -30,6 +31,8 @@ public class LatestRestaurantViewModel extends BaseViewModel {
 
     private List<Restaurant> mRestaurants;
 
+    private RestaurantCloudService mRestaurantCloudService;
+
     //endregion
 
     //region Getter and Setter
@@ -50,12 +53,14 @@ public class LatestRestaurantViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public LatestRestaurantViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService) {
+    public LatestRestaurantViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService, RestaurantCloudService restaurantCloudService) {
         super(navigator);
 
         mRestaurantStorageService = restaurantStorageService;
 
         mUserStorageService = userStorageService;
+
+        mRestaurantCloudService = restaurantCloudService;
     }
 
     //endregion
@@ -101,6 +106,18 @@ public class LatestRestaurantViewModel extends BaseViewModel {
             @Override
             public void onFailure(Throwable t) {
                 getNavigator().hideBusyIndicator();
+            }
+        });
+
+        mRestaurantCloudService.getAllRestaurants(new ICallback<List<Restaurant>>() {
+            @Override
+            public void onResult(List<Restaurant> result) {
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
             }
         });
     }

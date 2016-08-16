@@ -30,8 +30,8 @@ public class Category extends RealmObject {
     @SerializedName("updated_at")
     private Date mUpdatedAt;
 
-    @SerializedName("is_deleted")
-    private boolean mIsDeleted;
+    @SerializedName("deleted_at")
+    private Date mDeletedAt;
 
     //endregion
 
@@ -77,25 +77,25 @@ public class Category extends RealmObject {
         mImage = image;
     }
 
-    public boolean isDeleted() {
-        return mIsDeleted;
+    public Date getDeletedAt() {
+        return mDeletedAt;
     }
 
-    public void setDeleted(boolean deleted) {
-        mIsDeleted = deleted;
+    public void setDeletedAt(Date deletedAt) {
+        mDeletedAt = deletedAt;
     }
 
     //endregion
 
     //region Constructors
 
-    public Category(int id, String name, String image, Date createdAt, Date updatedAt, boolean isDeleted) {
+    public Category(int id, String name, String image, Date createdAt, Date updatedAt, Date deletedAt) {
         mId = id;
         mName = name;
         mImage = image;
         mCreatedAt = createdAt;
         mUpdatedAt = updatedAt;
-        mIsDeleted = isDeleted;
+        mDeletedAt = deletedAt;
     }
 
     public Category(){
@@ -114,7 +114,7 @@ public class Category extends RealmObject {
                 ", mImage='" + mImage + '\'' +
                 ", mCreatedAt=" + mCreatedAt +
                 ", mUpdatedAt=" + mUpdatedAt +
-                ", mIsDeleted=" + mIsDeleted +
+                ", mDeletedAt=" + mDeletedAt +
                 '}';
     }
 

@@ -49,11 +49,14 @@ public class Restaurant extends RealmObject {
     @SerializedName("updated_at")
     private Date mUpdatedAt;
 
-    @SerializedName("is_deleted")
-    private boolean mIsDeleted;
+    @SerializedName("deleted_at")
+    private Date mDeletedAt;
 
     @SerializedName("comments")
     private RealmList<Comment> mComments;
+
+    @SerializedName("category")
+    private Category mCategory;
 
     //endregion
 
@@ -73,7 +76,7 @@ public class Restaurant extends RealmObject {
         mContent = content;
     }
 
-    public Restaurant(int id, int categoryId, String name, String address, String openTime, String closeTime, String phoneNumber, String image, String content, Date createdAt, Date updatedAt, boolean isDeleted) {
+    public Restaurant(int id, int categoryId, String name, String address, String openTime, String closeTime, String phoneNumber, String image, String content, Date createdAt, Date updatedAt, Date deletedAt) {
         mId = id;
         mCategoryId = categoryId;
         mName = name;
@@ -85,7 +88,7 @@ public class Restaurant extends RealmObject {
         mContent = content;
         mCreatedAt = createdAt;
         mUpdatedAt = updatedAt;
-        mIsDeleted = isDeleted;
+        mDeletedAt = deletedAt;
     }
 
     //endregion
@@ -173,12 +176,12 @@ public class Restaurant extends RealmObject {
         mUpdatedAt = updatedAt;
     }
 
-    public boolean isDeleted() {
-        return mIsDeleted;
+    public Date getDeletedAt() {
+        return mDeletedAt;
     }
 
-    public void setDeleted(boolean deleted) {
-        mIsDeleted = deleted;
+    public void setDeletedAt(Date deletedAt) {
+        mDeletedAt = deletedAt;
     }
 
     public RealmList<Comment> getComments() {
@@ -189,6 +192,22 @@ public class Restaurant extends RealmObject {
         mComments = comments;
     }
 
+    public Category getCategory() {
+        return mCategory;
+    }
+
+    public void setCategory(Category category) {
+        mCategory = category;
+    }
+
+    public int getCategoryId() {
+        return mCategoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        mCategoryId = categoryId;
+    }
+
     //endregion
 
     //region Override Methods
@@ -196,15 +215,23 @@ public class Restaurant extends RealmObject {
     @Override
     public String toString() {
         return "Restaurant{" +
-                "mName='" + mName + '\'' +
+                "mId=" + mId +
+                ", mName='" + mName + '\'' +
                 ", mAddress='" + mAddress + '\'' +
                 ", mOpenTime='" + mOpenTime + '\'' +
+                ", mCategoryId=" + mCategoryId +
                 ", mCloseTime='" + mCloseTime + '\'' +
                 ", mPhoneNumber='" + mPhoneNumber + '\'' +
                 ", mImage='" + mImage + '\'' +
                 ", mContent='" + mContent + '\'' +
+                ", mCreatedAt=" + mCreatedAt +
+                ", mUpdatedAt=" + mUpdatedAt +
+                ", mDeletedAt=" + mDeletedAt +
+                ", mComments=" + mComments +
+                ", mCategory=" + mCategory +
                 '}';
     }
+
 
     //endregion
 

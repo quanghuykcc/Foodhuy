@@ -1,6 +1,7 @@
 package com.devlin.core.model.entities;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 import java.util.UUID;
@@ -17,24 +18,31 @@ public class User extends RealmObject {
 
     //region Properties
 
+    @SerializedName("id")
     @PrimaryKey
     private String mId;
 
+    @SerializedName("name")
     private String mUserName;
 
+    @SerializedName("password")
     private String mPassword;
 
     @Ignore
     @Expose
     private String mRetypePassword;
 
+    @SerializedName("email")
     private String mEmail;
 
+    @SerializedName("created_at")
     private Date mCreatedAt;
 
+    @SerializedName("updated_at")
     private Date mUpdatedAt;
 
-    private boolean mIsDeleted;
+    @SerializedName("deleted_at")
+    private Date mDeletedAt;
 
     @Expose
     private RealmList<Restaurant> mFavoriteRestaurant;
@@ -99,12 +107,12 @@ public class User extends RealmObject {
         mUpdatedAt = updatedAt;
     }
 
-    public boolean isDeleted() {
-        return mIsDeleted;
+    public Date getDeletedAt() {
+        return mDeletedAt;
     }
 
-    public void setDeleted(boolean deleted) {
-        mIsDeleted = deleted;
+    public void setDeletedAt(Date deletedAt) {
+        mDeletedAt = deletedAt;
     }
 
     public String getRetypePassword() {
@@ -136,9 +144,10 @@ public class User extends RealmObject {
                 ", mEmail='" + mEmail + '\'' +
                 ", mCreatedAt=" + mCreatedAt +
                 ", mUpdatedAt=" + mUpdatedAt +
-                ", mIsDeleted=" + mIsDeleted +
+                ", mDeletedAt=" + mDeletedAt +
                 '}';
     }
+
 
     //endregion
 

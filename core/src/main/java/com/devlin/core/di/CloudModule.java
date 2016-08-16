@@ -1,8 +1,12 @@
 package com.devlin.core.di;
 
+import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.services.Configuration;
 import com.devlin.core.model.services.IUserService;
+import com.devlin.core.model.services.clouds.IRestaurantCloudService;
 import com.devlin.core.model.services.clouds.IUserCloudService;
+import com.devlin.core.model.services.clouds.RestaurantCloudService;
+import com.devlin.core.model.services.clouds.UserCloudService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -34,13 +38,38 @@ public class CloudModule {
         return retrofit.create(IUserCloudService.class);
     }
 
+    @Provides
+    @Singleton
+    public IRestaurantCloudService providesRestaurantService() {
+        Gson gson = createGson();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Configuration.FOODHUY_API_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+        return retrofit.create(IRestaurantCloudService.class);
+    }
+
+    @Provides
+    @Singleton
+    public RestaurantCloudService providesRestaurantCloudService(IRestaurantCloudService iRestaurantCloudService) {
+        return new RestaurantCloudService(iRestaurantCloudService);
+    }
+
+    @Provides
+    @Singleton
+    public UserCloudService providesUserCloudService(IUserCloudService iUserCloudService) {
+        return new UserCloudService(iUserCloudService);
+    }
+
     //endregion
 
     //region Private methods
 
     private Gson createGson() {
         return new GsonBuilder().setLenient()
-                                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                                .setDateFormat("yyyy-MM-dd HH:mm:ss")
                                 .create();
     }
 

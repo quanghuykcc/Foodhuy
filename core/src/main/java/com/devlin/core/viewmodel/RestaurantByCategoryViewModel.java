@@ -199,5 +199,25 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
         removeFavoriteRestaurant(view, restaurant);
     }
 
+    public void showRestaurantDetails(Restaurant restaurant) {
+        getNavigator().navigateTo(Constants.RESTAURANT_DETAIL_PAGE);
+
+        getEventBus().postSticky(restaurant);
+    }
+
+    public void handleCommentViewClick(Restaurant restaurant) {
+        if (getNavigator().getApplication().isUserLoggedIn()) {
+            getNavigator().navigateTo(Constants.COMMENT_PAGE);
+
+            getEventBus().postSticky(restaurant);
+
+            return;
+        }
+        else {
+            getNavigator().navigateTo(Constants.LOGIN_PAGE);
+        }
+
+    }
+
     //endregion
 }

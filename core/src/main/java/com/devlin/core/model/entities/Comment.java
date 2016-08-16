@@ -30,8 +30,8 @@ public class Comment extends RealmObject {
     @SerializedName("updated_at")
     private Date mUpdatedAt;
 
-    @SerializedName("is_deleted")
-    private boolean mIsDeleted;
+    @SerializedName("deleted_at")
+    private Date mDeletedAt;
 
     @SerializedName("commenter")
     private User mCommenter;
@@ -80,12 +80,12 @@ public class Comment extends RealmObject {
         mUpdatedAt = updatedAt;
     }
 
-    public boolean isDeleted() {
-        return mIsDeleted;
+    public Date getDeletedAt() {
+        return mDeletedAt;
     }
 
-    public void setDeleted(boolean deleted) {
-        mIsDeleted = deleted;
+    public void setDeletedAt(Date deletedAt) {
+        mDeletedAt = deletedAt;
     }
 
     public User getCommenter() {
@@ -98,4 +98,18 @@ public class Comment extends RealmObject {
 
 
     //endregion
+
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "mId=" + mId +
+                ", mTitle='" + mTitle + '\'' +
+                ", mContent='" + mContent + '\'' +
+                ", mCreatedAt=" + mCreatedAt +
+                ", mUpdatedAt=" + mUpdatedAt +
+                ", mDeletedAt=" + mDeletedAt +
+                ", mCommenter=" + mCommenter +
+                '}';
+    }
 }

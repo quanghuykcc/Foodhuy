@@ -54,7 +54,7 @@ public class RestaurantByCategoryFragment extends BaseFragment<FragmentRestauran
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        Drawable dividerDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.divider);
+        Drawable dividerDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.divider_restaurant);
         RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(dividerDrawable);
 
         recyclerView.addItemDecoration(dividerItemDecoration);

@@ -14,5 +14,5 @@ public final class Configuration {
     //endregion
 
 
-    public static final String FOODHUY_API_URL = "http://quanghuykcc.comxa.com/SoccerNetworkService/";
+    public static final String FOODHUY_API_URL = "http://a84f383a.ngrok.io/";
 }
