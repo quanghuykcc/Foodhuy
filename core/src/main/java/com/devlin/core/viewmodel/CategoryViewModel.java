@@ -7,6 +7,7 @@ import com.devlin.core.BR;
 import com.devlin.core.R;
 import com.devlin.core.model.entities.Category;
 import com.devlin.core.model.entities.Restaurant;
+import com.devlin.core.model.services.clouds.CategoryCloudService;
 import com.devlin.core.model.services.storages.CategoryStorageService;
 import com.devlin.core.view.Constants;
 import com.devlin.core.view.ICallback;
@@ -34,14 +35,18 @@ public class CategoryViewModel extends BaseViewModel {
 
     private CategoryStorageService mCategoryStorageService;
 
+    private CategoryCloudService mCategoryCloudService;
+
     //endregion
 
     //region Constructors
 
-    public CategoryViewModel(INavigator navigator, CategoryStorageService storageService) {
+    public CategoryViewModel(INavigator navigator, CategoryStorageService categoryStorageService, CategoryCloudService categoryCloudService) {
         super(navigator);
 
-        mCategoryStorageService = storageService;
+        mCategoryStorageService = categoryStorageService;
+
+        mCategoryCloudService = categoryCloudService;
     }
 
     protected CategoryViewModel() {
@@ -71,6 +76,8 @@ public class CategoryViewModel extends BaseViewModel {
     public void onCreate() {
         super.onCreate();
 
+        getNavigator().showBusyIndicator("Đang tải...");
+
         loadCategories();
     }
 
@@ -94,7 +101,23 @@ public class CategoryViewModel extends BaseViewModel {
     //region Private methods
 
     private void loadCategories() {
-        mCategoryStorageService.getAllCategories(new ICallback<List<Category>>() {
+        mCategoryCloudService.getAllCategories(new ICallback<List<Category>>() {
+            @Override
+            public void onResult(List<Category> result) {
+                setCategories(result);
+
+                getNavigator().hideBusyIndicator();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e("TAG", "", t);
+
+                getNavigator().hideBusyIndicator();
+            }
+        });
+
+        /*mCategoryStorageService.getAllCategories(new ICallback<List<Category>>() {
             @Override
             public void onResult(List<Category> result) {
                 Log.d(TAG, "DONE");
@@ -108,7 +131,7 @@ public class CategoryViewModel extends BaseViewModel {
             public void onFailure(Throwable t) {
 
             }
-        });
+        });*/
     }
 
     //endregion

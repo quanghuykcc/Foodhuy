@@ -17,6 +17,7 @@ import com.devlin.foodhuy.App;
 import com.devlin.foodhuy.BR;
 import com.devlin.foodhuy.R;
 import com.devlin.foodhuy.adapters.DividerItemDecoration;
+import com.devlin.foodhuy.adapters.EndlessRecyclerViewScrollListener;
 import com.devlin.foodhuy.adapters.LatestRestaurantListAdapter;
 import com.devlin.foodhuy.databinding.FragmentLatestRestaurantBinding;
 
@@ -53,6 +54,13 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                mViewModel.getNextPageRestaurants(totalItemsCount);
+            }
+        });
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 

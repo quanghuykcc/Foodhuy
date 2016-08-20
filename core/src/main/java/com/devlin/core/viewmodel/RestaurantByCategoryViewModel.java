@@ -9,6 +9,8 @@ import com.devlin.core.BR;
 import com.devlin.core.R;
 import com.devlin.core.model.entities.Category;
 import com.devlin.core.model.entities.Restaurant;
+import com.devlin.core.model.services.Configuration;
+import com.devlin.core.model.services.clouds.RestaurantCloudService;
 import com.devlin.core.model.services.storages.RestaurantStorageService;
 import com.devlin.core.model.services.storages.UserStorageService;
 import com.devlin.core.view.Constants;
@@ -31,13 +33,25 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
 
     private List<Restaurant> mRestaurants;
 
+    private Category mCategory;
+
     private RestaurantStorageService mRestaurantStorageService;
 
     private UserStorageService mUserStorageService;
 
+    private RestaurantCloudService mRestaurantCloudService;
+
     //endregion
 
     //region Getter and Setter
+
+    public Category getCategory() {
+        return mCategory;
+    }
+
+    public void setCategory(Category category) {
+        mCategory = category;
+    }
 
     @Bindable
     public List<Restaurant> getRestaurants() {
@@ -59,12 +73,14 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public RestaurantByCategoryViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService) {
+    public RestaurantByCategoryViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService, RestaurantCloudService restaurantCloudService) {
         super(navigator);
 
         mRestaurantStorageService = restaurantStorageService;
 
         mUserStorageService = userStorageService;
+
+        mRestaurantCloudService = restaurantCloudService;
     }
 
     public RestaurantByCategoryViewModel() {
@@ -79,12 +95,13 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
     public void onCreate() {
         super.onCreate();
 
-        getNavigator().showBusyIndicator("Loading");
+        getNavigator().showBusyIndicator("Đang tải...");
     }
 
     @Override
     public void onStart() {
         super.onStart();
+
         getEventBus().register(this);
     }
 
@@ -99,12 +116,9 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
     public void onDestroy() {
         super.onDestroy();
 
+        mCategory = null;
         mRestaurants = null;
     }
-
-    //endregion
-
-    //region Private methods
 
     //endregion
 
@@ -114,7 +128,23 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
     public void event(Category category) {
         getNavigator().getApplication().getCurrentActivity().setTitle(category.getName());
 
-        mRestaurantStorageService.getRestaurantsByCategory(category, new ICallback<List<Restaurant>>() {
+        setCategory(category);
+
+        mRestaurantCloudService.getRestaurantsByCategory(category, 0, 20, new ICallback<List<Restaurant>>() {
+            @Override
+            public void onResult(List<Restaurant> result) {
+                setRestaurants(result);
+
+                getNavigator().hideBusyIndicator();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                getNavigator().hideBusyIndicator();
+            }
+        });
+
+        /*mRestaurantStorageService.getRestaurantsByCategory(category, new ICallback<List<Restaurant>>() {
             @Override
             public void onResult(List<Restaurant> result) {
                 setRestaurants(result);
@@ -127,7 +157,7 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
             }
         });
 
-        getEventBus().unregister(this);
+        getEventBus().unregister(this);*/
     }
 
     //endregion
@@ -217,6 +247,23 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
             getNavigator().navigateTo(Constants.LOGIN_PAGE);
         }
 
+    }
+
+    public void getNextPageRestaurants(long currentOffset) {
+        long nextOffset = currentOffset + 1;
+
+        mRestaurantCloudService.getRestaurantsByCategory(mCategory, nextOffset, Configuration.NUMBER_RECORDS_PER_PAGE, new ICallback<List<Restaurant>>() {
+            @Override
+            public void onResult(List<Restaurant> result) {
+                mRestaurants.addAll(result);
+
+                notifyPropertyChanged(BR.restaurants);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
     }
 
     //endregion

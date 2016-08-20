@@ -36,7 +36,7 @@ public class RestaurantStorageService extends  BaseStorageService implements IRe
     //region Override Methods
 
     @Override
-    public void getRestaurants(long from, long to, String orderBy, ICallback<List<Restaurant>> callback) {
+    public void getRestaurants(long offset, long limit, ICallback<List<Restaurant>> callback) {
 
     }
 
@@ -134,7 +134,7 @@ public class RestaurantStorageService extends  BaseStorageService implements IRe
     }
 
     @Override
-    public void getRestaurantsByCategory(Category category, final ICallback<List<Restaurant>> callback) {
+    public void getRestaurantsByCategory(Category category, long offset, long limit, final ICallback<List<Restaurant>> callback) {
 
         final RealmResults<Restaurant> restaurants = mRealm.where(Restaurant.class).equalTo("mCategoryId", category.getId()).findAllSortedAsync("mCreatedAt", Sort.DESCENDING);
 

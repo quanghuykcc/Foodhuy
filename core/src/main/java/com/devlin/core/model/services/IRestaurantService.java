@@ -15,7 +15,7 @@ import io.realm.RealmResults;
  */
 public interface IRestaurantService {
 
-    void getRestaurants(long from, long to, String orderBy, ICallback<List<Restaurant>> callback);
+    void getRestaurants(long limit, long offset, ICallback<List<Restaurant>> callback);
 
     void getAllRestaurants(ICallback<List<Restaurant>> callback);
 
@@ -27,7 +27,7 @@ public interface IRestaurantService {
 
     void getLatestRestaurants(ICallback<List<Restaurant>> callback);
 
-    void getRestaurantsByCategory(Category category, ICallback<List<Restaurant>> callback);
+    void getRestaurantsByCategory(Category category, long offset, long limit, ICallback<List<Restaurant>> callback);
 
     void addComment(Comment comment, Restaurant restaurant, ICallback<Boolean> callback);
 

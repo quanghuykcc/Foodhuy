@@ -3,6 +3,8 @@ package com.devlin.core.di;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.services.Configuration;
 import com.devlin.core.model.services.IUserService;
+import com.devlin.core.model.services.clouds.CategoryCloudService;
+import com.devlin.core.model.services.clouds.ICategoryCloudService;
 import com.devlin.core.model.services.clouds.IRestaurantCloudService;
 import com.devlin.core.model.services.clouds.IUserCloudService;
 import com.devlin.core.model.services.clouds.RestaurantCloudService;
@@ -14,6 +16,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.realm.annotations.PrimaryKey;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -53,6 +56,19 @@ public class CloudModule {
 
     @Provides
     @Singleton
+    public ICategoryCloudService providesCategoryService() {
+        Gson gson = createGson();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Configuration.FOODHUY_API_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+        return retrofit.create(ICategoryCloudService.class);
+    }
+
+    @Provides
+    @Singleton
     public RestaurantCloudService providesRestaurantCloudService(IRestaurantCloudService iRestaurantCloudService) {
         return new RestaurantCloudService(iRestaurantCloudService);
     }
@@ -63,13 +79,19 @@ public class CloudModule {
         return new UserCloudService(iUserCloudService);
     }
 
+    @Provides
+    @Singleton
+    public CategoryCloudService providesCategoryCloudService(ICategoryCloudService iCategoryCloudService) {
+        return new CategoryCloudService(iCategoryCloudService);
+    }
+
     //endregion
 
     //region Private methods
 
     private Gson createGson() {
         return new GsonBuilder().setLenient()
-                                .setDateFormat("yyyy-MM-dd HH:mm:ss")
+                                .setDateFormat(Configuration.TIMESTAMP_FORMAT)
                                 .create();
     }
 

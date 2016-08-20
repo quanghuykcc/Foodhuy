@@ -1,5 +1,6 @@
 package com.devlin.core.di;
 
+import com.devlin.core.model.services.clouds.CategoryCloudService;
 import com.devlin.core.model.services.clouds.RestaurantCloudService;
 import com.devlin.core.model.services.clouds.UserCloudService;
 import com.devlin.core.model.services.storages.CategoryStorageService;
@@ -33,14 +34,14 @@ public class ViewModelModule {
 
     @Provides
     @Singleton
-    public RestaurantByCategoryViewModel providesRestaurantByCategoryViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService) {
-        return new RestaurantByCategoryViewModel(navigator, restaurantStorageService, userStorageService);
+    public RestaurantByCategoryViewModel providesRestaurantByCategoryViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService, RestaurantCloudService restaurantCloudService) {
+        return new RestaurantByCategoryViewModel(navigator, restaurantStorageService, userStorageService, restaurantCloudService);
     }
 
     @Provides
     @Singleton
-    public CategoryViewModel providesCategoryViewModel(INavigator navigator, CategoryStorageService storageService) {
-        return new CategoryViewModel(navigator, storageService);
+    public CategoryViewModel providesCategoryViewModel(INavigator navigator, CategoryStorageService categoryStorageService, CategoryCloudService categoryCloudService) {
+        return new CategoryViewModel(navigator, categoryStorageService, categoryCloudService);
     }
 
     @Provides

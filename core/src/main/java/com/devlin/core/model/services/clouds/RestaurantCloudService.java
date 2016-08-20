@@ -26,18 +26,38 @@ public class RestaurantCloudService extends BaseCloudService<IRestaurantCloudSer
     }
 
     @Override
-    public void getRestaurants(long from, long to, String orderBy, ICallback<List<Restaurant>> callback) {
+    public void getRestaurants(long offset, long limit, final ICallback<List<Restaurant>> callback) {
+        getICloudService().getRestaurants(offset, limit).enqueue(new Callback<APIResponse<List<Restaurant>>>() {
 
+            @Override
+            public void onResponse(Call<APIResponse<List<Restaurant>>> call, Response<APIResponse<List<Restaurant>>> response) {
+                APIResponse<List<Restaurant>> apiResponse = response.body();
+                if (apiResponse.isSuccess()) {
+                    callback.onResult(apiResponse.getData());
+
+                }
+                else {
+                    Log.d("TAG", apiResponse.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIResponse<List<Restaurant>>> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
     }
 
     @Override
-    public void getAllRestaurants(ICallback<List<Restaurant>> callback) {
-        getICloudService().getAllRestaurants().enqueue(new Callback<APIResponse>() {
+    public void getAllRestaurants(final ICallback<List<Restaurant>> callback) {
+        /*getICloudService().getAllRestaurants().enqueue(new Callback<APIResponse<List<Restaurant>>>() {
 
             @Override
-            public void onResponse(Call<APIResponse> call, Response<APIResponse> response) {
-                APIResponse apiResponse = response.body();
+            public void onResponse(Call<APIResponse<List<Restaurant>>> call, Response<APIResponse<List<Restaurant>>> response) {
+                APIResponse<List<Restaurant>> apiResponse = response.body();
                 if (apiResponse.isSuccess()) {
+                    callback.onResult(apiResponse.getData());
+
                     Log.d("TAG", apiResponse.getData().get(0).toString());
                 }
                 else {
@@ -46,10 +66,10 @@ public class RestaurantCloudService extends BaseCloudService<IRestaurantCloudSer
             }
 
             @Override
-            public void onFailure(Call<APIResponse> call, Throwable t) {
-                Log.e("TAG", "", t);
+            public void onFailure(Call<APIResponse<List<Restaurant>>> call, Throwable t) {
+                callback.onFailure(t);
             }
-        });
+        });*/
     }
 
     @Override
@@ -73,8 +93,24 @@ public class RestaurantCloudService extends BaseCloudService<IRestaurantCloudSer
     }
 
     @Override
-    public void getRestaurantsByCategory(Category category, ICallback<List<Restaurant>> callback) {
+    public void getRestaurantsByCategory(Category category, long offset, long limit, final ICallback<List<Restaurant>> callback) {
+        getICloudService().getRestaurantsByCategory(category.getId(), offset, limit).enqueue(new Callback<APIResponse<List<Restaurant>>>() {
+            @Override
+            public void onResponse(Call<APIResponse<List<Restaurant>>> call, Response<APIResponse<List<Restaurant>>> response) {
+                APIResponse<List<Restaurant>> apiResponse = response.body();
+                if (apiResponse.isSuccess()) {
+                    callback.onResult(apiResponse.getData());
+                }
+                else {
+                    Log.d("TAG", apiResponse.getMessage());
+                }
+            }
 
+            @Override
+            public void onFailure(Call<APIResponse<List<Restaurant>>> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
     }
 
     @Override

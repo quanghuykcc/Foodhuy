@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Administrator on 7/30/2016.
  */
-public class APIResponse {
+public class APIResponse<E> {
 
     //region Properties
 
@@ -17,7 +17,7 @@ public class APIResponse {
     private boolean mSuccess;
 
     @SerializedName("data")
-    private List<Restaurant> mData;
+    private E mData;
 
     @SerializedName("message")
     private String mMessage;
@@ -34,11 +34,11 @@ public class APIResponse {
         mSuccess = success;
     }
 
-    public List<Restaurant> getData() {
+    public E getData() {
         return mData;
     }
 
-    public void setData(List<Restaurant> data) {
+    public void setData(E data) {
         mData = data;
     }
 

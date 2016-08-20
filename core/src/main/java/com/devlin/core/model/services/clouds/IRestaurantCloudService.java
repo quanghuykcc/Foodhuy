@@ -1,6 +1,9 @@
 package com.devlin.core.model.services.clouds;
 
+import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.responses.APIResponse;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -11,9 +14,13 @@ import retrofit2.http.Query;
  */
 public interface IRestaurantCloudService {
 
-    @GET
-    Call<APIResponse> getRestaurants(@Query("from") long from, @Query("to") long to, @Query("order_by") String orderBy);
+    @GET("/api/v1/restaurants")
+    Call<APIResponse<List<Restaurant>>> getRestaurants(@Query("offset") long offset, @Query("limit") long limit);
+
 
     @GET("/api/v1/restaurants")
-    Call<APIResponse> getAllRestaurants();
+    Call<APIResponse<List<Restaurant>>> getRestaurantsByCategory(@Query("category_id") int categoryId, @Query("offset") long offset, @Query("limit") long limit);
+
+    /*@GET("/api/v1/restaurants")
+    Call<APIResponse<List<Restaurant>>> getAllRestaurants();*/
 }

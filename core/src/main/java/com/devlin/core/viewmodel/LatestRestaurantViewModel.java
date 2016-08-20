@@ -4,10 +4,10 @@ import android.databinding.Bindable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.devlin.core.R;
 import com.devlin.core.model.entities.Restaurant;
+import com.devlin.core.model.services.Configuration;
 import com.devlin.core.model.services.clouds.RestaurantCloudService;
 import com.devlin.core.model.services.storages.RestaurantStorageService;
 import com.devlin.core.model.services.storages.UserStorageService;
@@ -15,6 +15,9 @@ import com.devlin.core.view.Constants;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
 import com.devlin.core.BR;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
@@ -48,6 +51,10 @@ public class LatestRestaurantViewModel extends BaseViewModel {
         notifyPropertyChanged(BR.restaurants);
     }
 
+    @Override
+    public EventBus getEventBus() {
+        return super.getEventBus();
+    }
 
     //endregion
 
@@ -70,7 +77,9 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     @Override
     public void onCreate() {
         super.onCreate();
-        loadLatestRestaurants();
+
+        loadInitLatestRestaurants();
+
         getNavigator().showBusyIndicator("");
     }
 
@@ -95,8 +104,8 @@ public class LatestRestaurantViewModel extends BaseViewModel {
 
     //region Private Methods
 
-    private void loadLatestRestaurants() {
-        mRestaurantStorageService.getLatestRestaurants(new ICallback<List<Restaurant>>() {
+    private void loadInitLatestRestaurants() {
+        /*mRestaurantStorageService.getLatestRestaurants(new ICallback<List<Restaurant>>() {
             @Override
             public void onResult(List<Restaurant> result) {
                 setRestaurants(result);
@@ -107,29 +116,30 @@ public class LatestRestaurantViewModel extends BaseViewModel {
             public void onFailure(Throwable t) {
                 getNavigator().hideBusyIndicator();
             }
-        });
+        });*/
 
-        mRestaurantCloudService.getAllRestaurants(new ICallback<List<Restaurant>>() {
+        mRestaurantCloudService.getRestaurants(0, 20, new ICallback<List<Restaurant>>() {
             @Override
             public void onResult(List<Restaurant> result) {
+                setRestaurants(result);
 
+                getNavigator().hideBusyIndicator();
             }
 
             @Override
             public void onFailure(Throwable t) {
+
+                getNavigator().hideBusyIndicator();
 
             }
         });
     }
 
     private void addFavoriteRestaurant(final View view, Restaurant restaurant) {
-        Log.d("TAG", "ADD FAVORITE RESTAURANT");
-
         mUserStorageService.addFavoriteRestaurant(getNavigator().getApplication().getLoginUser(), restaurant, new ICallback<Boolean>() {
             @Override
             public void onResult(Boolean result) {
                 if (result == true) {
-                    Log.d("TAG", "ADD FAVORITE RESTAURANT SUCCESS");
                     view.setBackgroundColor(ContextCompat.getColor(getNavigator().getApplication().getCurrentActivity(), R.color.colorPrimary));
                 }
             }
@@ -142,8 +152,6 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     }
 
     private void removeFavoriteRestaurant(final View view, Restaurant restaurant) {
-        Log.d("TAG", "REMOVE FAVORITE RESTAURANT");
-
         mUserStorageService.removeFavoriteRestaurant(getNavigator().getApplication().getLoginUser(), restaurant, new ICallback<Boolean>() {
             @Override
             public void onResult(Boolean result) {
@@ -205,6 +213,24 @@ public class LatestRestaurantViewModel extends BaseViewModel {
             getNavigator().navigateTo(Constants.LOGIN_PAGE);
         }
 
+    }
+
+
+    public void getNextPageRestaurants(long currentOffset) {
+        long nextOffset = currentOffset + 1;
+
+        mRestaurantCloudService.getRestaurants(nextOffset, Configuration.NUMBER_RECORDS_PER_PAGE, new ICallback<List<Restaurant>>() {
+            @Override
+            public void onResult(List<Restaurant> result) {
+                mRestaurants.addAll(result);
+
+                notifyPropertyChanged(BR.restaurants);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
     }
 
     //endregion
