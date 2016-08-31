@@ -4,7 +4,7 @@ import android.databinding.Bindable;
 
 import com.devlin.core.BR;
 import com.devlin.core.model.entities.User;
-import com.devlin.core.model.services.storages.UserStorageService;
+import com.devlin.core.model.services.storages.UserModel;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
 
@@ -15,7 +15,7 @@ public class RegisterViewModel extends BaseViewModel {
 
     //region Properties
 
-    private UserStorageService mUserStorageService;
+    private UserModel mUserStorageService;
 
     private User mUser;
 
@@ -48,7 +48,7 @@ public class RegisterViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public RegisterViewModel(INavigator navigator, UserStorageService storageService) {
+    public RegisterViewModel(INavigator navigator, UserModel storageService) {
         super(navigator);
 
         mUserStorageService = storageService;

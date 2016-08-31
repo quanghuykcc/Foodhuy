@@ -9,11 +9,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 
+import com.devlin.core.event.FetchedCategoryEvent;
 import com.devlin.core.view.BaseFragment;
 import com.devlin.core.viewmodel.CategoryViewModel;
 import com.devlin.foodhuy.App;
@@ -23,6 +25,9 @@ import com.devlin.foodhuy.adapters.CategoryListAdapter;
 import com.devlin.foodhuy.adapters.DividerItemDecoration;
 import com.devlin.foodhuy.databinding.FragmentCategoryBinding;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -31,6 +36,8 @@ public class CategoryFragment extends BaseFragment<FragmentCategoryBinding, Cate
     //region Properties
 
     private CategoryListAdapter mCategoryListAdapter;
+
+    private static final String TAG = "CategoryFragment";
 
     //endregion
 
@@ -49,6 +56,11 @@ public class CategoryFragment extends BaseFragment<FragmentCategoryBinding, Cate
         App.sharedComponent().inject(this);
 
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

@@ -1,10 +1,7 @@
 package com.devlin.core.model.services.storages;
 
-import android.util.Log;
-
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.entities.User;
-import com.devlin.core.model.services.IUserService;
 import com.devlin.core.view.ICallback;
 
 import java.util.Calendar;
@@ -13,16 +10,16 @@ import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
-import io.realm.RealmModel;
+import io.realm.RealmResults;
 
 /**
  * Created by Administrator on 7/31/2016.
  */
-public class UserStorageService extends BaseStorageService implements IUserService {
+public class UserModel extends BaseModel {
 
     //region Properties
 
-    public UserStorageService(Realm realm) {
+    public UserModel(Realm realm) {
         super(realm);
     }
 
@@ -30,22 +27,17 @@ public class UserStorageService extends BaseStorageService implements IUserServi
 
     //region Override Methods
 
-    @Override
-    public void logIn(User user, final ICallback<User> callback) {
+    public void cacheLoggedInUser(User user) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
 
-        final User checkedUser = mRealm.where(User.class).equalTo("mEmail", user.getEmail()).equalTo("mPassword", user.getPassword()).findFirstAsync();
+        RealmResults<User> beRemovedUser = realm.where(User.class).findAll();
+        beRemovedUser.deleteAllFromRealm();
 
-        checkedUser.addChangeListener(new RealmChangeListener<User>() {
-            @Override
-            public void onChange(User element) {
-                callback.onResult(element);
-                checkedUser.removeChangeListener(this);
-            }
-        });
-
+        realm.copyToRealm(user);
+        realm.commitTransaction();
     }
 
-    @Override
     public void register(final User user, final ICallback<Boolean> callback) {
 
         User checkedUser = mRealm.where(User.class).equalTo("mEmail", user.getEmail()).findFirst();
@@ -80,7 +72,6 @@ public class UserStorageService extends BaseStorageService implements IUserServi
         }
     }
 
-    @Override
     public void addFavoriteRestaurant(final User user, final Restaurant restaurant, final ICallback<Boolean> callback) {
 
         final String email = user.getEmail();
@@ -108,7 +99,6 @@ public class UserStorageService extends BaseStorageService implements IUserServi
         });
     }
 
-    @Override
     public void removeFavoriteRestaurant(final User user, final Restaurant restaurant, final ICallback<Boolean> callback) {
         final String email = user.getEmail();
         final int restaurantId = restaurant.getId();
@@ -146,7 +136,6 @@ public class UserStorageService extends BaseStorageService implements IUserServi
         });
     }
 
-    @Override
     public void loadFavoriteRestaurants(User user, final ICallback<List<Restaurant>> callback) {
         final User checkedUser = mRealm.where(User.class).equalTo("mId", user.getId()).findFirstAsync();
 

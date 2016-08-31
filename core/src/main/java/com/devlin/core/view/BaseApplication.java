@@ -3,7 +3,6 @@ package com.devlin.core.view;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-
 import com.devlin.core.model.entities.User;
 
 import io.realm.Realm;
@@ -51,6 +50,7 @@ public class BaseApplication extends Application implements  Application.Activit
     @Override
     public void onCreate() {
         super.onCreate();
+
         registerActivityLifecycleCallbacks(this);
 
         RealmConfiguration realmConfig = new RealmConfiguration.Builder(getApplicationContext()).deleteRealmIfMigrationNeeded().build();

@@ -11,8 +11,8 @@ import com.devlin.core.model.entities.Category;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.services.Configuration;
 import com.devlin.core.model.services.clouds.RestaurantCloudService;
-import com.devlin.core.model.services.storages.RestaurantStorageService;
-import com.devlin.core.model.services.storages.UserStorageService;
+import com.devlin.core.model.services.storages.RestaurantModel;
+import com.devlin.core.model.services.storages.UserModel;
 import com.devlin.core.view.Constants;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
@@ -35,9 +35,9 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
 
     private Category mCategory;
 
-    private RestaurantStorageService mRestaurantStorageService;
+    private RestaurantModel mRestaurantStorageService;
 
-    private UserStorageService mUserStorageService;
+    private UserModel mUserStorageService;
 
     private RestaurantCloudService mRestaurantCloudService;
 
@@ -73,7 +73,7 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public RestaurantByCategoryViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService, RestaurantCloudService restaurantCloudService) {
+    public RestaurantByCategoryViewModel(INavigator navigator, RestaurantModel restaurantStorageService, UserModel userStorageService, RestaurantCloudService restaurantCloudService) {
         super(navigator);
 
         mRestaurantStorageService = restaurantStorageService;

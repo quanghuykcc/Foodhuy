@@ -1,12 +1,10 @@
 package com.devlin.core.di;
 
-import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.services.Configuration;
-import com.devlin.core.model.services.IUserService;
 import com.devlin.core.model.services.clouds.CategoryCloudService;
-import com.devlin.core.model.services.clouds.ICategoryCloudService;
-import com.devlin.core.model.services.clouds.IRestaurantCloudService;
-import com.devlin.core.model.services.clouds.IUserCloudService;
+import com.devlin.core.model.services.clouds.ICategoryService;
+import com.devlin.core.model.services.clouds.IRestaurantService;
+import com.devlin.core.model.services.clouds.IUserService;
 import com.devlin.core.model.services.clouds.RestaurantCloudService;
 import com.devlin.core.model.services.clouds.UserCloudService;
 import com.google.gson.Gson;
@@ -16,7 +14,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.realm.annotations.PrimaryKey;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -30,7 +27,7 @@ public class CloudModule {
     //region Provide methods
     @Provides
     @Singleton
-    public IUserCloudService providesUserService() {
+    public IUserService providesUserService() {
         Gson gson = createGson();
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -38,12 +35,12 @@ public class CloudModule {
                                         .addConverterFactory(GsonConverterFactory.create(gson))
                                         .build();
 
-        return retrofit.create(IUserCloudService.class);
+        return retrofit.create(IUserService.class);
     }
 
     @Provides
     @Singleton
-    public IRestaurantCloudService providesRestaurantService() {
+    public IRestaurantService providesRestaurantService() {
         Gson gson = createGson();
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -51,12 +48,12 @@ public class CloudModule {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        return retrofit.create(IRestaurantCloudService.class);
+        return retrofit.create(IRestaurantService.class);
     }
 
     @Provides
     @Singleton
-    public ICategoryCloudService providesCategoryService() {
+    public ICategoryService providesCategoryService() {
         Gson gson = createGson();
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -64,25 +61,25 @@ public class CloudModule {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        return retrofit.create(ICategoryCloudService.class);
+        return retrofit.create(ICategoryService.class);
     }
 
     @Provides
     @Singleton
-    public RestaurantCloudService providesRestaurantCloudService(IRestaurantCloudService iRestaurantCloudService) {
-        return new RestaurantCloudService(iRestaurantCloudService);
+    public RestaurantCloudService providesRestaurantCloudService(IRestaurantService iRestaurantService) {
+        return new RestaurantCloudService(iRestaurantService);
     }
 
     @Provides
     @Singleton
-    public UserCloudService providesUserCloudService(IUserCloudService iUserCloudService) {
-        return new UserCloudService(iUserCloudService);
+    public UserCloudService providesUserCloudService(IUserService iUserService) {
+        return new UserCloudService(iUserService);
     }
 
     @Provides
     @Singleton
-    public CategoryCloudService providesCategoryCloudService(ICategoryCloudService iCategoryCloudService) {
-        return new CategoryCloudService(iCategoryCloudService);
+    public CategoryCloudService providesCategoryCloudService(ICategoryService iCategoryService) {
+        return new CategoryCloudService(iCategoryService);
     }
 
     //endregion

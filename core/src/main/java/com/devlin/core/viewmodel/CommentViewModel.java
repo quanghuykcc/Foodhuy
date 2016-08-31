@@ -6,8 +6,7 @@ import android.util.Log;
 import com.devlin.core.model.entities.Bundle;
 import com.devlin.core.model.entities.Comment;
 import com.devlin.core.model.entities.Restaurant;
-import com.devlin.core.model.services.storages.RestaurantStorageService;
-import com.devlin.core.model.services.storages.UserStorageService;
+import com.devlin.core.model.services.storages.RestaurantModel;
 import com.devlin.core.view.Constants;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
@@ -28,7 +27,7 @@ public class CommentViewModel extends BaseViewModel {
 
     private Restaurant mRestaurant;
 
-    private RestaurantStorageService mRestaurantStorageService;
+    private RestaurantModel mRestaurantStorageService;
 
     //endregion
 
@@ -57,7 +56,7 @@ public class CommentViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public CommentViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService) {
+    public CommentViewModel(INavigator navigator, RestaurantModel restaurantStorageService) {
         super(navigator);
 
         mRestaurantStorageService = restaurantStorageService;

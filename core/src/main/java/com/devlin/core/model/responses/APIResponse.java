@@ -4,6 +4,7 @@ import com.devlin.core.model.entities.Restaurant;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,6 +22,9 @@ public class APIResponse<E> {
 
     @SerializedName("message")
     private String mMessage;
+
+    @SerializedName("last_sync_timestamp")
+    private Date mLastSyncTimestamp;
 
     //endregion
 
@@ -50,6 +54,13 @@ public class APIResponse<E> {
         mMessage = message;
     }
 
+    public Date getLastSyncTimestamp() {
+        return mLastSyncTimestamp;
+    }
+
+    public void setLastSyncTimestamp(Date lastSyncTimestamp) {
+        mLastSyncTimestamp = lastSyncTimestamp;
+    }
 
     //endregion
 

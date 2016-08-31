@@ -1,7 +1,6 @@
 package com.devlin.foodhuy;
 
 import com.devlin.core.di.ViewModelModule;
-import com.devlin.core.viewmodel.FavoriteRestaurantViewModel;
 import com.devlin.foodhuy.activities.AddRestaurantActivity;
 import com.devlin.foodhuy.activities.CommentActivity;
 import com.devlin.foodhuy.activities.LoginActivity;

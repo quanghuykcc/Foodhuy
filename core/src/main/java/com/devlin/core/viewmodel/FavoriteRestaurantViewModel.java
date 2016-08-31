@@ -1,17 +1,13 @@
 package com.devlin.core.viewmodel;
 
 import android.databinding.Bindable;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.View;
 
 import com.devlin.core.BR;
-import com.devlin.core.R;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.entities.User;
-import com.devlin.core.model.services.storages.RestaurantStorageService;
-import com.devlin.core.model.services.storages.UserStorageService;
-import com.devlin.core.view.BaseRecyclerViewAdapter;
+import com.devlin.core.model.services.storages.RestaurantModel;
+import com.devlin.core.model.services.storages.UserModel;
 import com.devlin.core.view.Constants;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
@@ -27,9 +23,9 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
 
     //region Properties
 
-    private RestaurantStorageService mRestaurantStorageService;
+    private RestaurantModel mRestaurantStorageService;
 
-    private UserStorageService mUserStorageService;
+    private UserModel mUserStorageService;
 
     private List<Restaurant> mRestaurants;
 
@@ -52,7 +48,7 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public FavoriteRestaurantViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService) {
+    public FavoriteRestaurantViewModel(INavigator navigator, RestaurantModel restaurantStorageService, UserModel userStorageService) {
         super(navigator);
 
         mRestaurantStorageService = restaurantStorageService;

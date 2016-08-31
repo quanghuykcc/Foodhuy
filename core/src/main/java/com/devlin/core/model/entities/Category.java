@@ -85,6 +85,10 @@ public class Category extends RealmObject {
         mDeletedAt = deletedAt;
     }
 
+    public boolean isDeleted() {
+        return mDeletedAt != null;
+    }
+
     //endregion
 
     //region Constructors

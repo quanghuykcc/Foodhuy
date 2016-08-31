@@ -4,14 +4,10 @@ import android.databinding.Bindable;
 import android.util.Log;
 
 import com.devlin.core.model.entities.Restaurant;
-import com.devlin.core.model.services.storages.RestaurantStorageService;
+import com.devlin.core.model.services.storages.RestaurantModel;
 import com.devlin.core.view.Constants;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
-import com.devlin.core.view.Navigator;
-
-import io.realm.Realm;
-import io.realm.RealmObject;
 
 /**
  * Created by Administrator on 7/27/2016.
@@ -20,7 +16,7 @@ public class AddRestaurantViewModel extends BaseViewModel {
 
     //region Properties
 
-    private RestaurantStorageService mRestaurantStorageService;
+    private RestaurantModel mRestaurantStorageService;
 
     private static final String TAG = "AddRestaurantViewModel";
 
@@ -30,7 +26,7 @@ public class AddRestaurantViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public AddRestaurantViewModel(INavigator navigator, RestaurantStorageService storageService) {
+    public AddRestaurantViewModel(INavigator navigator, RestaurantModel storageService) {
         super(navigator);
 
         mRestaurantStorageService = storageService;

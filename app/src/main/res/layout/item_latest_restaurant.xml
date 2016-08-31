@@ -101,8 +101,6 @@
                             android:layout_height="24dp"
                             android:scaleType="centerCrop"
                             android:id="@+id/image_view_favorite"
-                            android:background="@{viewModel.isFavoriteRestaurant(restaurant)? @color/colorPrimary : @color/colorWhite}"
-                            android:onClick="@{(view) -> viewModel.handleFavoriteRestaurantViewClick(view, restaurant)}"
                             android:src="@android:drawable/ic_menu_save"
                             android:layout_marginRight="7dp"/>
 

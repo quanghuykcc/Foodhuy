@@ -1,30 +1,35 @@
 package com.devlin.core.model.services.storages;
 
-import android.util.Log;
-
 import com.devlin.core.model.entities.Category;
 import com.devlin.core.model.entities.Comment;
 import com.devlin.core.model.entities.Restaurant;
+import com.devlin.core.model.entities.SyncHistory;
 import com.devlin.core.model.entities.User;
-import com.devlin.core.model.services.IRestaurantService;
+import com.devlin.core.model.services.Configuration;
 import com.devlin.core.view.ICallback;
 
+import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
-import io.realm.RealmModel;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
 /**
  * Created by Administrator on 7/31/2016.
  */
-public class RestaurantStorageService extends  BaseStorageService implements IRestaurantService {
+public class RestaurantModel extends BaseModel {
+
+    //region Properties
+
+    private static final String RESTAURANT_TABLE_NAME = "Restaurant";
+
+    //endregion
 
     //region Constructors
 
-    public RestaurantStorageService(Realm realm) {
+    public RestaurantModel(Realm realm) {
 
         super(realm);
 
@@ -35,15 +40,15 @@ public class RestaurantStorageService extends  BaseStorageService implements IRe
 
     //region Override Methods
 
-    @Override
     public void getRestaurants(long offset, long limit, ICallback<List<Restaurant>> callback) {
 
     }
 
-    @Override
-    public void getAllRestaurants(final ICallback<List<Restaurant>> callback) {
 
-        final RealmResults<Restaurant> restaurants = mRealm.where(Restaurant.class).findAllAsync();
+    public void getAllRestaurantsAsync(final ICallback<List<Restaurant>> callback) {
+        Realm realm = Realm.getDefaultInstance();
+
+        final RealmResults<Restaurant> restaurants = realm.where(Restaurant.class).findAllAsync();
 
         restaurants.addChangeListener(new RealmChangeListener<RealmResults<Restaurant>>() {
             @Override
@@ -53,10 +58,8 @@ public class RestaurantStorageService extends  BaseStorageService implements IRe
                 restaurants.removeChangeListener(this);
             }
         });
-
     }
 
-    @Override
     public void getRestaurantById(String id, final ICallback<Restaurant> callback) {
 
         final Restaurant restaurant = mRealm.where(Restaurant.class).equalTo("id", id).findFirstAsync();
@@ -72,7 +75,6 @@ public class RestaurantStorageService extends  BaseStorageService implements IRe
 
     }
 
-    @Override
     public void saveRestaurant(final Restaurant restaurant, final ICallback<Boolean> callback) {
 
         mRealm.executeTransactionAsync(new Realm.Transaction() {
@@ -96,22 +98,12 @@ public class RestaurantStorageService extends  BaseStorageService implements IRe
 
     }
 
-    @Override
-    public void getLatestRestaurants(final ICallback<List<Restaurant>> callback) {
-
-        final RealmResults<Restaurant> restaurants = mRealm.where(Restaurant.class).findAllSortedAsync("mCreatedAt", Sort.DESCENDING);
-
-        restaurants.addChangeListener(new RealmChangeListener<RealmResults<Restaurant>>() {
-            @Override
-            public void onChange(RealmResults<Restaurant> element) {
-                callback.onResult(element);
-
-                restaurants.removeChangeListener(this);
-            }
-        });
+    public RealmResults<Restaurant> getLatestRestaurants() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Restaurant> restaurants = realm.where(Restaurant.class).findAllSortedAsync("mCreatedAt", Sort.DESCENDING);
+        return restaurants;
     }
 
-    @Override
     public void saveRestaurants(final List<Restaurant> restaurants, final ICallback<Boolean> callback) {
         mRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
@@ -133,7 +125,6 @@ public class RestaurantStorageService extends  BaseStorageService implements IRe
         });
     }
 
-    @Override
     public void getRestaurantsByCategory(Category category, long offset, long limit, final ICallback<List<Restaurant>> callback) {
 
         final RealmResults<Restaurant> restaurants = mRealm.where(Restaurant.class).equalTo("mCategoryId", category.getId()).findAllSortedAsync("mCreatedAt", Sort.DESCENDING);
@@ -148,7 +139,6 @@ public class RestaurantStorageService extends  BaseStorageService implements IRe
         });
     }
 
-    @Override
     public void addComment(final Comment comment, final Restaurant restaurant, final ICallback<Boolean> callback) {
 
         final int restaurantId = restaurant.getId();
@@ -177,6 +167,78 @@ public class RestaurantStorageService extends  BaseStorageService implements IRe
                 callback.onFailure(error);
             }
         });
+    }
+
+    public Date getLatestSynchronizeTimestamp() {
+        Realm realm = Realm.getDefaultInstance();
+
+        SyncHistory syncHistory = realm.where(SyncHistory.class).equalTo("mNameTable", RESTAURANT_TABLE_NAME).findFirst();
+
+        if (syncHistory != null) {
+            return syncHistory.getLastSyncTimestamp();
+        }
+
+        return null;
+    }
+
+    private void updateLatestSynchronizeTimestamp(Date latestSynchronizeTimestamp) {
+        Realm realm = Realm.getDefaultInstance();
+
+        SyncHistory syncHistory = realm.where(SyncHistory.class).equalTo("mNameTable", RESTAURANT_TABLE_NAME).findFirst();
+
+        if (syncHistory == null) {
+            syncHistory = realm.createObject(SyncHistory.class);
+            syncHistory.setNameTable(RESTAURANT_TABLE_NAME);
+        }
+        else {
+            syncHistory.setLastSyncTimestamp(latestSynchronizeTimestamp);
+        }
+
+    }
+
+    public void handleFetchedRestaurants(List<Restaurant> restaurants, Date latestSynchronizeTimestamp) {
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.beginTransaction();
+
+        for (Restaurant restaurant : restaurants) {
+
+            if (restaurant.isDeleted()) {
+                deleteRestaurant(restaurant);
+            }
+            else {
+                addNewOrUpdateRestaurant(restaurant);
+            }
+        }
+
+        optimizeCachedRestaurants();
+
+        updateLatestSynchronizeTimestamp(latestSynchronizeTimestamp);
+
+        realm.commitTransaction();
+    }
+
+    private void optimizeCachedRestaurants() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Restaurant> restaurants = realm.where(Restaurant.class).findAllSorted("mUpdatedAt", Sort.DESCENDING);
+        for (int i = Configuration.NUMBER_CACHE_RESTAURANTS; i < restaurants.size(); i++) {
+            restaurants.get(i).deleteFromRealm();
+        }
+    }
+
+    private void deleteRestaurant(Restaurant restaurant) {
+        Realm realm = Realm.getDefaultInstance();
+
+        RealmResults<Restaurant> deleteRestaurants = realm.where(Restaurant.class).equalTo("mId", restaurant.getId()).findAll();
+        if (deleteRestaurants.size() > 0) {
+            deleteRestaurants.deleteAllFromRealm();
+        }
+    }
+
+    private void addNewOrUpdateRestaurant(Restaurant restaurant) {
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.copyToRealmOrUpdate(restaurant);
     }
 
     //endregion

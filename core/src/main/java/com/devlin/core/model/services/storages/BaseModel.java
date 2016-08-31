@@ -5,7 +5,7 @@ import io.realm.Realm;
 /**
  * Created by Administrator on 8/1/2016.
  */
-public abstract class BaseStorageService {
+public abstract class BaseModel {
 
     //region Properties
 
@@ -15,10 +15,8 @@ public abstract class BaseStorageService {
 
     //region Constructors
 
-    public BaseStorageService(Realm realm) {
-
+    public BaseModel(Realm realm) {
         mRealm = realm;
-
     }
 
     //endregion

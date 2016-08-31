@@ -35,6 +35,9 @@ public class User extends RealmObject {
     @SerializedName("email")
     private String mEmail;
 
+    @SerializedName("remember_token")
+    private String mRemmemberToken;
+
     @SerializedName("created_at")
     private Date mCreatedAt;
 
@@ -45,6 +48,7 @@ public class User extends RealmObject {
     private Date mDeletedAt;
 
     @Expose
+    @SerializedName("favorite_restaurants")
     private RealmList<Restaurant> mFavoriteRestaurant;
 
     //endregion
@@ -121,6 +125,14 @@ public class User extends RealmObject {
 
     public void setRetypePassword(String retypePassword) {
         mRetypePassword = retypePassword;
+    }
+
+    public String getRemmemberToken() {
+        return mRemmemberToken;
+    }
+
+    public void setRemmemberToken(String remmemberToken) {
+        mRemmemberToken = remmemberToken;
     }
 
     //endregion

@@ -208,6 +208,10 @@ public class Restaurant extends RealmObject {
         mCategoryId = categoryId;
     }
 
+    public boolean isDeleted() {
+        return mDeletedAt != null;
+    }
+
     //endregion
 
     //region Override Methods

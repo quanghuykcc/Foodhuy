@@ -4,6 +4,7 @@ import android.databinding.Bindable;
 import android.util.Log;
 
 import com.devlin.core.BR;
+import com.devlin.core.event.LoggedInEvent;
 import com.devlin.core.model.entities.User;
 import com.devlin.core.view.INavigator;
 
@@ -88,10 +89,10 @@ public class MainViewModel extends BaseViewModel {
     //region Subcribes Methods
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(User loginUser) {
-        Log.d(TAG, loginUser.getUserName());
-
-        setUser(loginUser);
+    public void event(LoggedInEvent loggedInEvent) {
+        if (loggedInEvent.isSuccess()) {
+            setUser(loggedInEvent.getLoggedInUser());
+        }
     }
 
     //endregion

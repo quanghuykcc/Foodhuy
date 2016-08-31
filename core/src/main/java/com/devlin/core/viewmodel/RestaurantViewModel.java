@@ -4,8 +4,8 @@ import android.databinding.Bindable;
 
 import com.devlin.core.BR;
 import com.devlin.core.model.entities.Restaurant;
-import com.devlin.core.model.services.storages.RestaurantStorageService;
-import com.devlin.core.model.services.storages.UserStorageService;
+import com.devlin.core.model.services.storages.RestaurantModel;
+import com.devlin.core.model.services.storages.UserModel;
 import com.devlin.core.view.INavigator;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -20,15 +20,15 @@ public class RestaurantViewModel extends BaseViewModel {
 
     private Restaurant mRestaurant;
 
-    private UserStorageService mUserStorageService;
+    private UserModel mUserStorageService;
 
 
-    private RestaurantStorageService mRestaurantStorageService;
+    private RestaurantModel mRestaurantStorageService;
     //endregion
 
     //region Constructors
 
-    public RestaurantViewModel(INavigator navigator, RestaurantStorageService restaurantStorageService, UserStorageService userStorageService) {
+    public RestaurantViewModel(INavigator navigator, RestaurantModel restaurantStorageService, UserModel userStorageService) {
         super(navigator);
 
         mUserStorageService = userStorageService;
