@@ -1,12 +1,10 @@
 package com.devlin.core.di;
 
 import com.devlin.core.model.services.Configuration;
-import com.devlin.core.model.services.clouds.CategoryCloudService;
 import com.devlin.core.model.services.clouds.ICategoryService;
+import com.devlin.core.model.services.clouds.IFavoriteRestaurantService;
 import com.devlin.core.model.services.clouds.IRestaurantService;
 import com.devlin.core.model.services.clouds.IUserService;
-import com.devlin.core.model.services.clouds.RestaurantCloudService;
-import com.devlin.core.model.services.clouds.UserCloudService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -66,20 +64,15 @@ public class CloudModule {
 
     @Provides
     @Singleton
-    public RestaurantCloudService providesRestaurantCloudService(IRestaurantService iRestaurantService) {
-        return new RestaurantCloudService(iRestaurantService);
-    }
+    public IFavoriteRestaurantService providesFavoriteRestaurantService() {
+        Gson gson = createGson();
 
-    @Provides
-    @Singleton
-    public UserCloudService providesUserCloudService(IUserService iUserService) {
-        return new UserCloudService(iUserService);
-    }
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Configuration.FOODHUY_API_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
 
-    @Provides
-    @Singleton
-    public CategoryCloudService providesCategoryCloudService(ICategoryService iCategoryService) {
-        return new CategoryCloudService(iCategoryService);
+        return retrofit.create(IFavoriteRestaurantService.class);
     }
 
     //endregion

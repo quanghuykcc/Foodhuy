@@ -1,22 +1,27 @@
 package com.devlin.core.viewmodel;
 
 import android.databinding.Bindable;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.view.View;
+import android.databinding.Observable;
+import android.databinding.ObservableArrayList;
+import android.databinding.ObservableList;
+import android.os.AsyncTask;
+import android.widget.ResourceCursorAdapter;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.devlin.core.R;
+import com.devlin.core.event.FetchedFavoriteRestaurantEvent;
 import com.devlin.core.event.FetchedRestaurantEvent;
+import com.devlin.core.job.AddNewFavoriteJob;
 import com.devlin.core.job.BasicJob;
 import com.devlin.core.job.FetchRestaurantJob;
+import com.devlin.core.model.entities.FavoriteRestaurant;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.responses.APIResponse;
 import com.devlin.core.model.services.Configuration;
+import com.devlin.core.model.services.clouds.IFavoriteRestaurantService;
 import com.devlin.core.model.services.clouds.IRestaurantService;
-import com.devlin.core.model.services.clouds.RestaurantCloudService;
+import com.devlin.core.model.services.storages.FavoriteRestaurantModel;
 import com.devlin.core.model.services.storages.RestaurantModel;
-import com.devlin.core.model.services.storages.UserModel;
+import com.devlin.core.util.Utils;
 import com.devlin.core.view.Constants;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
@@ -28,8 +33,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,15 +46,25 @@ public class LatestRestaurantViewModel extends BaseViewModel {
 
     private RestaurantModel mRestaurantModel;
 
-    private List<Restaurant> mRestaurants;
+    private ObservableArrayList<Restaurant> mRestaurants;
 
     private IRestaurantService mIRestaurantService;
 
     private JobManager mJobManager;
 
+    private FavoriteRestaurantModel mFavoriteRestaurantModel;
+
+    private IFavoriteRestaurantService mIFavoriteRestaurantService;
+
     //endregion
 
     //region Getter and Setter
+
+
+    @Override
+    public EventBus getEventBus() {
+        return super.getEventBus();
+    }
 
     @Bindable
     public List<Restaurant> getRestaurants() {
@@ -59,16 +72,17 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     }
 
     public void setRestaurants(List<Restaurant> restaurants) {
-        mRestaurants = restaurants;
-
+        mRestaurants = new ObservableArrayList<>();
+        mRestaurants.addAll(restaurants);
         notifyPropertyChanged(BR.restaurants);
     }
+
 
     //endregion
 
     //region Constructors
 
-    public LatestRestaurantViewModel(INavigator navigator, RestaurantModel restaurantModel, IRestaurantService restaurantService, JobManager jobManager) {
+    public LatestRestaurantViewModel(INavigator navigator, RestaurantModel restaurantModel, IRestaurantService restaurantService, JobManager jobManager, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService iFavoriteRestaurantService) {
         super(navigator);
 
         mRestaurantModel = restaurantModel;
@@ -76,6 +90,10 @@ public class LatestRestaurantViewModel extends BaseViewModel {
         mJobManager = jobManager;
 
         mIRestaurantService = restaurantService;
+
+        mFavoriteRestaurantModel = favoriteRestaurantModel;
+
+        mIFavoriteRestaurantService = iFavoriteRestaurantService;
     }
 
     //endregion
@@ -85,8 +103,6 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        getNavigator().showBusyIndicator("");
 
         getEventBus().register(this);
 
@@ -117,12 +133,25 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     //region Private Methods
 
     private void loadInitLatestRestaurants() {
-        RealmResults<Restaurant> latestRestaurants = mRestaurantModel.getLatestRestaurants();
-        setRestaurants(latestRestaurants);
-        latestRestaurants.addChangeListener(new RealmChangeListener<RealmResults<Restaurant>>() {
+        mRestaurantModel.getLatestRestaurantsAsync(new ICallback<List<Restaurant>>() {
             @Override
-            public void onChange(RealmResults<Restaurant> element) {
-                setRestaurants(element);
+            public void onResult(final List<Restaurant> result) {
+                setRestaurants(result);
+
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<Integer> indexList = Utils.updateFavoriteRestaurants(mRestaurants, getNavigator().getApplication().getFavoriteRestaurantsOfUser());
+                        if (indexList.size() > 0) {
+                            getEventBus().post(indexList);
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
             }
         });
 
@@ -150,6 +179,16 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     }
 
 
+    public void handleAddOrDeleteFavorite(Restaurant restaurant) {
+        if (!getNavigator().getApplication().isUserLoggedIn()) {
+            getNavigator().navigateTo(Constants.LOGIN_PAGE);
+            return;
+        }
+
+        FavoriteRestaurant favoriteRestaurant = new FavoriteRestaurant(restaurant.getId(), getNavigator().getApplication().getLoginUser().getId());
+        mJobManager.addJobInBackground(new AddNewFavoriteJob(BasicJob.UI_HIGH, mFavoriteRestaurantModel, mIFavoriteRestaurantService, favoriteRestaurant));
+    }
+
     public void getNextPageRestaurants(long currentOffset) {
         long nextOffset = currentOffset + 1;
 
@@ -159,7 +198,6 @@ public class LatestRestaurantViewModel extends BaseViewModel {
                 if (response.isSuccessful()) {
                     if (response.body().isSuccess()) {
                         mRestaurants.addAll(response.body().getData());
-                        notifyPropertyChanged(BR.restaurants);
                     }
                 }
             }
@@ -169,10 +207,40 @@ public class LatestRestaurantViewModel extends BaseViewModel {
         });
     }
 
+    //endregion
+
+    //region Subscribe Methods
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(FetchedRestaurantEvent fetchedRestaurantEvent) {
         if (fetchedRestaurantEvent.isSuccess()) {
             setRestaurants(fetchedRestaurantEvent.getRestaurants());
+        }
+        else {
+
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(FetchedFavoriteRestaurantEvent fetchedFavoriteRestaurantEvent) {
+        if (fetchedFavoriteRestaurantEvent.isSuccess()) {
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    List<Integer> indexList = Utils.updateFavoriteRestaurants(mRestaurants, getNavigator().getApplication().getFavoriteRestaurantsOfUser());
+                    getEventBus().post(indexList);
+                }
+            });
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void event(Integer action) {
+        if (action == Constants.ACTION_LOGGED_OUT) {
+
+            for (Restaurant restaurant : getRestaurants()) {
+                restaurant.setFavorite(false);
+            }
         }
     }
 

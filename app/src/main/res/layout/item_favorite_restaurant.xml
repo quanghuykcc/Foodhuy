@@ -102,7 +102,6 @@
                             android:scaleType="centerCrop"
                             android:id="@+id/image_view_favorite"
                             android:background="@color/colorPrimary"
-                            android:onClick="@{()->viewModel.removeFavoriteRestaurant(restaurant)}"
                             android:src="@android:drawable/ic_menu_save"
                             android:layout_marginRight="7dp"/>
 

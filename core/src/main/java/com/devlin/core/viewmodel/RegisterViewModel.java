@@ -1,12 +1,19 @@
 package com.devlin.core.viewmodel;
 
 import android.databinding.Bindable;
+import android.widget.Toast;
 
 import com.devlin.core.BR;
 import com.devlin.core.model.entities.User;
+import com.devlin.core.model.responses.APIResponse;
+import com.devlin.core.model.services.clouds.IUserService;
 import com.devlin.core.model.services.storages.UserModel;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Administrator on 8/3/2016.
@@ -15,7 +22,7 @@ public class RegisterViewModel extends BaseViewModel {
 
     //region Properties
 
-    private UserModel mUserStorageService;
+    private IUserService mIUserService;
 
     private User mUser;
 
@@ -48,11 +55,10 @@ public class RegisterViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public RegisterViewModel(INavigator navigator, UserModel storageService) {
+    public RegisterViewModel(INavigator navigator, IUserService userService) {
         super(navigator);
 
-        mUserStorageService = storageService;
-
+        mIUserService = userService;
     }
 
     //endregion
@@ -125,26 +131,32 @@ public class RegisterViewModel extends BaseViewModel {
         if (validateUser(user)) {
             getNavigator().showBusyIndicator("Đăng ký");
 
-            mUserStorageService.register(user, new ICallback<Boolean>() {
+            mIUserService.signUp(user.getEmail(), user.getPassword(), user.getUserName()).enqueue(new Callback<APIResponse<Boolean>>() {
                 @Override
-                public void onResult(Boolean result) {
-                    if (result == true) {
-                        getNavigator().goBack();
-                    }
-                    else {
-                        setError("Email đã tồn tại");
+                public void onResponse(Call<APIResponse<Boolean>> call, Response<APIResponse<Boolean>> response) {
+                    if (!response.isSuccessful()) {
+                        setError("Xảy ra lỗi đăng ký tài khoản");
+                        getNavigator().hideBusyIndicator();
+                        return;
+                    } else if (!response.body().isSuccess()) {
+                        setError(response.body().getMessage());
+                        getNavigator().hideBusyIndicator();
+                        return;
                     }
 
                     getNavigator().hideBusyIndicator();
+                    Toast.makeText(getNavigator().getApplication().getCurrentActivity(), "Bạn đã đăng ký tài khoản thành công", Toast.LENGTH_SHORT).show();
+
+                    getNavigator().goBack();
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(Call<APIResponse<Boolean>> call, Throwable t) {
+                    setError("Xảy ra lỗi đăng ký tài khoản");
                     getNavigator().hideBusyIndicator();
                 }
             });
         }
-
     }
 
     //endregion

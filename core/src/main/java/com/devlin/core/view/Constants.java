@@ -45,11 +45,10 @@ public class Constants {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
-            ACTION_ADD_COMMENT, ACTION_SHOW_RESTAURANT_BY_CATEGORY
+            ACTION_LOGGED_OUT
     })
     public @interface ActionKey {}
+    public static final int ACTION_LOGGED_OUT = 0;
 
-    public static final int ACTION_ADD_COMMENT = 1;
-    public static final int ACTION_SHOW_RESTAURANT_BY_CATEGORY = 2;
 
 }

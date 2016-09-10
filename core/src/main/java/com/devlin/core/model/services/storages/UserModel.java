@@ -38,39 +38,7 @@ public class UserModel extends BaseModel {
         realm.commitTransaction();
     }
 
-    public void register(final User user, final ICallback<Boolean> callback) {
 
-        User checkedUser = mRealm.where(User.class).equalTo("mEmail", user.getEmail()).findFirst();
-
-        if (checkedUser == null) {
-
-            user.setId(UUID.randomUUID().toString());
-            user.setCreatedAt(Calendar.getInstance().getTime());
-
-            mRealm.executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm bgRealm) {
-
-                    User realmRestaurant = bgRealm.copyToRealm(user);
-
-                }
-            }, new Realm.Transaction.OnSuccess() {
-                @Override
-                public void onSuccess() {
-                    callback.onResult(true);
-                }
-            }, new Realm.Transaction.OnError() {
-                @Override
-                public void onError(Throwable error) {
-                    callback.onFailure(error);
-                }
-            });
-        }
-
-        else {
-            callback.onResult(false);
-        }
-    }
 
     public void addFavoriteRestaurant(final User user, final Restaurant restaurant, final ICallback<Boolean> callback) {
 
@@ -146,6 +114,15 @@ public class UserModel extends BaseModel {
                 checkedUser.removeChangeListener(this);
             }
         });
+    }
+
+    public void clearLocalUsers() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<User> users = realm.where(User.class).findAll();
+
+        realm.beginTransaction();
+        users.deleteAllFromRealm();
+        realm.commitTransaction();
     }
 
     //endregion

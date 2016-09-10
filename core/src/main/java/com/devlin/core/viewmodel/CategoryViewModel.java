@@ -5,23 +5,17 @@ import android.util.Log;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.devlin.core.BR;
-import com.devlin.core.di.JobModule;
 import com.devlin.core.event.FetchedCategoryEvent;
 import com.devlin.core.job.BasicJob;
 import com.devlin.core.job.FetchCategoryJob;
 import com.devlin.core.model.entities.Category;
-import com.devlin.core.model.services.clouds.CategoryCloudService;
 import com.devlin.core.model.services.clouds.ICategoryService;
 import com.devlin.core.model.services.storages.CategoryModel;
-import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.List;
-
-import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
@@ -38,7 +32,6 @@ public class CategoryViewModel extends BaseViewModel {
 
     private CategoryModel mCategoryStorageService;
 
-    private CategoryCloudService mCategoryCloudService;
 
     private ICategoryService mICategoryService;
 
@@ -48,12 +41,10 @@ public class CategoryViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public CategoryViewModel(INavigator navigator, CategoryModel categoryStorageService, CategoryCloudService categoryCloudService, JobManager jobManager, ICategoryService categoryService) {
+    public CategoryViewModel(INavigator navigator, CategoryModel categoryStorageService, JobManager jobManager, ICategoryService categoryService) {
         super(navigator);
 
         mCategoryStorageService = categoryStorageService;
-
-        mCategoryCloudService = categoryCloudService;
 
         mJobManager = jobManager;
 

@@ -112,9 +112,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewMode
         if (id == R.id.action_settings) {
             return true;
         }
-        else if (id ==R.id.action_add) {
-            Dialog dialog = new AddDialog(this);
-            dialog.show();
+        else if (id ==R.id.action_logout) {
+            mViewModel.logOut();
             return true;
         }
 

@@ -10,14 +10,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.view.BaseFragment;
+import com.devlin.core.viewmodel.LatestRestaurantViewModel;
 import com.devlin.core.viewmodel.RestaurantByCategoryViewModel;
 import com.devlin.foodhuy.App;
 import com.devlin.foodhuy.BR;
 import com.devlin.foodhuy.R;
+import com.devlin.foodhuy.adapters.BindingRecyclerViewAdapter;
 import com.devlin.foodhuy.adapters.DividerItemDecoration;
 import com.devlin.foodhuy.adapters.EndlessRecyclerViewScrollListener;
 import com.devlin.foodhuy.adapters.RestaurantByCategoryListAdapter;
+import com.devlin.foodhuy.adapters.binder.CompositeItemBinder;
+import com.devlin.foodhuy.adapters.binder.RestaurantBinder;
 import com.devlin.foodhuy.databinding.FragmentRestaurantByCategoryBinding;
 
 /**
@@ -29,7 +34,7 @@ public class RestaurantByCategoryFragment extends BaseFragment<FragmentRestauran
 
     private static final String TAG = "RestaurantByCategoryFragment";
 
-    private RestaurantByCategoryListAdapter mRestaurantByCategoryListAdapter;
+    private BindingRecyclerViewAdapter<Restaurant, RestaurantByCategoryViewModel> mRestaurantByCategoryListAdapter;
 
     //endregion
 
@@ -67,7 +72,7 @@ public class RestaurantByCategoryFragment extends BaseFragment<FragmentRestauran
 
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        mRestaurantByCategoryListAdapter = new RestaurantByCategoryListAdapter();
+        mRestaurantByCategoryListAdapter = new BindingRecyclerViewAdapter<Restaurant, RestaurantByCategoryViewModel>(new CompositeItemBinder<Restaurant>(new RestaurantBinder(BR.restaurant, R.layout.item_restaurant_by_category)), null);
         mRestaurantByCategoryListAdapter.setViewModel(mViewModel);
         recyclerView.setAdapter(mRestaurantByCategoryListAdapter);
 

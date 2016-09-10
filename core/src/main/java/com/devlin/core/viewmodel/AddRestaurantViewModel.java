@@ -81,23 +81,6 @@ public class AddRestaurantViewModel extends BaseViewModel {
             return;
         }
 
-        mRestaurantStorageService.saveRestaurant(restaurant, new ICallback<Boolean>() {
-
-            @Override
-            public void onResult(Boolean result) {
-                if (result.booleanValue() == true) {
-
-                    getNavigator().navigateTo(Constants.MAIN_PAGE);
-
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-
-            }
-        });
-
     }
 
     //endregion

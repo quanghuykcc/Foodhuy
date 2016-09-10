@@ -19,10 +19,10 @@ import retrofit2.http.Query;
  */
 public interface ICategoryService {
 
-    @GET("/api/v1/categories")
+    @GET("/foody_api_huy/api/v1/categories")
     Call<APIResponse<List<Category>>> getAllCategories();
 
-    @GET("/api/v1/categories")
+    @GET("/foody_api_huy/api/v1/categories")
     Call<APIResponse<List<Category>>> getNewCategories(@Query("last_sync_timestamp") Date lastSyncTimestamp);
 
 }

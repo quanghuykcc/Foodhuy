@@ -6,10 +6,13 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.devlin.core.event.LoggedInEvent;
+import com.devlin.core.model.entities.FavoriteRestaurant;
 import com.devlin.core.model.entities.User;
 import com.devlin.core.model.responses.APIResponse;
 import com.devlin.core.model.services.clouds.IUserService;
 import com.devlin.core.model.services.storages.UserModel;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -55,32 +58,32 @@ public class LogInJob extends BasicJob {
 
     @Override
     public void onRun() throws Throwable {
-
         Call<APIResponse<User>> call;
 
+
         call = mIUserService.logIn(mLogInUser.getEmail(), mLogInUser.getPassword());
+
 
         Response<APIResponse<User>> response = call.execute();
         if (response.isSuccessful()) {
             APIResponse<User> apiResponse = response.body();
 
             if (apiResponse.isSuccess()) {
-                getEventBus().post(new LoggedInEvent(true, apiResponse.getData(), apiResponse.getMessage()));
+                User loggedInUser = apiResponse.getData();
 
-                mUserModel.cacheLoggedInUser(apiResponse.getData());
+                getEventBus().post(new LoggedInEvent(true, loggedInUser, apiResponse.getMessage()));
 
-                return;
-        }
-        else {
-            getEventBus().post(new LoggedInEvent(false, apiResponse.getMessage()));
-            return;
-        }
+                mUserModel.cacheLoggedInUser(loggedInUser);
+            }
+            else {
+                getEventBus().post(new LoggedInEvent(false, apiResponse.getMessage()));
+            }
         }
         else {
             getEventBus().post(new LoggedInEvent(false));
-            return;
         }
     }
+
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {

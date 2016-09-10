@@ -1,5 +1,6 @@
 package com.devlin.core.model.entities;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
@@ -7,6 +8,7 @@ import java.util.UUID;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -51,6 +53,10 @@ public class Restaurant extends RealmObject {
 
     @SerializedName("deleted_at")
     private Date mDeletedAt;
+
+    @Ignore
+    @Expose
+    private boolean mIsFavorite;
 
     @SerializedName("comments")
     private RealmList<Comment> mComments;
@@ -210,6 +216,14 @@ public class Restaurant extends RealmObject {
 
     public boolean isDeleted() {
         return mDeletedAt != null;
+    }
+
+    public boolean isFavorite() {
+        return mIsFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        mIsFavorite = favorite;
     }
 
     //endregion

@@ -11,15 +11,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.view.BaseFragment;
 import com.devlin.core.viewmodel.LatestRestaurantViewModel;
 import com.devlin.foodhuy.App;
 import com.devlin.foodhuy.BR;
 import com.devlin.foodhuy.R;
+import com.devlin.foodhuy.adapters.BindingRecyclerViewAdapter;
 import com.devlin.foodhuy.adapters.DividerItemDecoration;
 import com.devlin.foodhuy.adapters.EndlessRecyclerViewScrollListener;
-import com.devlin.foodhuy.adapters.LatestRestaurantListAdapter;
+import com.devlin.foodhuy.adapters.binder.CompositeItemBinder;
+import com.devlin.foodhuy.adapters.binder.RestaurantBinder;
 import com.devlin.foodhuy.databinding.FragmentLatestRestaurantBinding;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.List;
 
 /**
  * Created by Administrator on 8/2/2016.
@@ -30,7 +38,7 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
 
     private static final String TAG = "LatestRestaurantFragment";
 
-    private LatestRestaurantListAdapter mLastestRestaurantListAdapter;
+    private BindingRecyclerViewAdapter<Restaurant, LatestRestaurantViewModel> mLastestRestaurantListAdapter;
 
     //endregion
 
@@ -39,6 +47,7 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         App.sharedComponent().inject(this);
+        mViewModel.getEventBus().register(this);
         super.onCreate(savedInstanceState);
     }
 
@@ -69,8 +78,10 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
 
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        mLastestRestaurantListAdapter = new LatestRestaurantListAdapter();
+        mLastestRestaurantListAdapter = new BindingRecyclerViewAdapter<Restaurant, LatestRestaurantViewModel>(new CompositeItemBinder<Restaurant>(new RestaurantBinder(BR.restaurant, R.layout.item_latest_restaurant)), null);
+
         mLastestRestaurantListAdapter.setViewModel(mViewModel);
+
         recyclerView.setAdapter(mLastestRestaurantListAdapter);
 
         return view;
@@ -89,7 +100,22 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mViewModel.getEventBus().unregister(this);
     }
+
+    //endregion
+
+    //region Subcribe Methods
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(List<Integer> indexList) {
+        if (mLastestRestaurantListAdapter != null) {
+            for (Integer i : indexList) {
+                mLastestRestaurantListAdapter.notifyItemChanged(i);
+            }
+        }
+    }
+
 
     //endregion
 }

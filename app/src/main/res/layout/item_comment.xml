@@ -10,13 +10,6 @@
             type="com.devlin.core.viewmodel.RestaurantViewModel"/>
     </data>
 
-    <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        card_view:cardUseCompatPadding="true"
-        card_view:cardCornerRadius="4dp"
-        android:layout_height="wrap_content">
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:padding="8dp"
@@ -26,15 +19,18 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:scaleType="centerCrop"
+                android:layout_marginRight="10dp"
                 android:src="@drawable/restaurant_placeholder"
                 android:id="@+id/commenter_avatar"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textStyle="bold"
                 android:text="@{comment.commenter.userName}"
                 android:textColor="#333333"
-                android:textSize="14sp"
+                android:layout_marginBottom="5dp"
+                android:textSize="13sp"
                 android:id="@+id/text_view_commenter_name"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/commenter_avatar"
@@ -45,11 +41,10 @@
                 android:layout_height="wrap_content"
                 android:text="@{comment.content}"
                 android:textColor="#333333"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:id="@+id/text_view_content_comment"
                 android:layout_below="@+id/text_view_title_comment"
-                android:layout_alignLeft="@+id/text_view_title_comment"
-                android:layout_alignStart="@+id/text_view_title_comment"/>
+                android:layout_toRightOf="@+id/commenter_avatar"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -57,15 +52,13 @@
                 android:text="@{comment.title}"
                 android:textColor="#333333"
                 android:textSize="13sp"
+                android:textStyle="italic|bold"
                 android:id="@+id/text_view_title_comment"
-                android:layout_below="@+id/commenter_avatar"
-                android:layout_toLeftOf="@+id/text_view_commenter_name"
-                android:layout_toStartOf="@+id/text_view_commenter_name"/>
+                android:layout_below="@+id/text_view_commenter_name"
+                android:layout_toRightOf="@+id/commenter_avatar"/>
 
         </RelativeLayout>
 
-
-    </android.support.v7.widget.CardView>
 
 
 </layout>

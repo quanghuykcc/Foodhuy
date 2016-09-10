@@ -3,7 +3,12 @@ package com.devlin.core.view;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+
+import com.devlin.core.model.entities.FavoriteRestaurant;
 import com.devlin.core.model.entities.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -17,7 +22,9 @@ public class BaseApplication extends Application implements  Application.Activit
 
     private Activity mCurrentActivity;
 
-    private User mLoginUser;
+    private transient User mLoginUser = null;
+
+    private List<FavoriteRestaurant> mFavoriteRestaurantsOfUser;
 
     //endregion
 
@@ -29,6 +36,14 @@ public class BaseApplication extends Application implements  Application.Activit
 
     public boolean isCurrentActivityAvailable() {
         return mCurrentActivity != null;
+    }
+
+    public List<FavoriteRestaurant> getFavoriteRestaurantsOfUser() {
+        return mFavoriteRestaurantsOfUser;
+    }
+
+    public void setFavoriteRestaurantsOfUser(List<FavoriteRestaurant> favoriteRestaurantsOfUser) {
+        mFavoriteRestaurantsOfUser = favoriteRestaurantsOfUser;
     }
 
     public User getLoginUser() {
@@ -52,6 +67,8 @@ public class BaseApplication extends Application implements  Application.Activit
         super.onCreate();
 
         registerActivityLifecycleCallbacks(this);
+
+        mFavoriteRestaurantsOfUser = new ArrayList<>();
 
         RealmConfiguration realmConfig = new RealmConfiguration.Builder(getApplicationContext()).deleteRealmIfMigrationNeeded().build();
         Realm.setDefaultConfiguration(realmConfig);

@@ -8,5 +8,6 @@
     <string name="login">Đăng nhập</string>
     <string name="latest">Mới nhất</string>
     <string name="register">Đăng ký</string>
+    <string name="logout">Đăng xuất</string>
 
 </resources>

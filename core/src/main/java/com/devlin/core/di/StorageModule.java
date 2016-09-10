@@ -1,6 +1,7 @@
 package com.devlin.core.di;
 
 import com.devlin.core.model.services.storages.CategoryModel;
+import com.devlin.core.model.services.storages.FavoriteRestaurantModel;
 import com.devlin.core.model.services.storages.RestaurantModel;
 import com.devlin.core.model.services.storages.UserModel;
 
@@ -40,6 +41,12 @@ public class StorageModule {
     @Singleton
     public CategoryModel providesCategoryStorageService(Realm realm) {
         return new CategoryModel(realm);
+    }
+
+    @Provides
+    @Singleton
+    public FavoriteRestaurantModel providesFavoriteRestaurantModel(Realm realm) {
+        return new FavoriteRestaurantModel(realm);
     }
 
     //endregion

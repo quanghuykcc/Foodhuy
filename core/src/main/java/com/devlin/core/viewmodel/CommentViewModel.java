@@ -111,29 +111,6 @@ public class CommentViewModel extends BaseViewModel {
         setRestaurant(restaurant);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(Bundle bundle) {
-        if (bundle.getCode() == Constants.ACTION_ADD_COMMENT) {
-            mComment.setCommenter(getNavigator().getApplication().getLoginUser());
-
-            mRestaurantStorageService.addComment(mComment, mRestaurant, new ICallback<Boolean>() {
-                @Override
-                public void onResult(Boolean result) {
-                    if (result == true) {
-                        Log.d("TAG", "Add comment success");
-                        getNavigator().goBack();
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    Log.e("TAG", "", t);
-                }
-            });
-
-        }
-    }
-
     //endregion
 
 }

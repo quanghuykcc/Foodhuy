@@ -41,9 +41,6 @@ public class CommentActivity extends BaseActivity<ActivityCommentBinding, Commen
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_add_comment) {
-            Bundle bundle = new Bundle(Constants.ACTION_ADD_COMMENT);
-            mViewModel.getEventBus().post(bundle);
-
             return true;
         }
 

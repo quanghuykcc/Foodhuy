@@ -75,12 +75,13 @@ public class FetchRestaurantJob extends BasicJob {
             if (apiResponse.isSuccess()) {
                 if (apiResponse.getData().size() > 0) {
                     mRestaurantModel.handleFetchedRestaurants(apiResponse.getData(), apiResponse.getLastSyncTimestamp());
-
-                    getEventBus().post(new FetchedRestaurantEvent(true));
+                    List<Restaurant> newRestaurants = mRestaurantModel.getLatestRestaurants();
+                    getEventBus().post(new FetchedRestaurantEvent(true, newRestaurants));
                     return;
                 }
                 else {
                     Log.d(TAG, "There is nothing changed");
+                    return;
                 }
 
             }

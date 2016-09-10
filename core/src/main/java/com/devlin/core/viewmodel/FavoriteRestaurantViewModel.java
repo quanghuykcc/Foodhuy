@@ -1,11 +1,15 @@
 package com.devlin.core.viewmodel;
 
 import android.databinding.Bindable;
+import android.databinding.ObservableArrayList;
 import android.util.Log;
 
 import com.devlin.core.BR;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.entities.User;
+import com.devlin.core.model.responses.APIResponse;
+import com.devlin.core.model.services.Configuration;
+import com.devlin.core.model.services.clouds.IRestaurantService;
 import com.devlin.core.model.services.storages.RestaurantModel;
 import com.devlin.core.model.services.storages.UserModel;
 import com.devlin.core.view.Constants;
@@ -16,6 +20,10 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Created by Administrator on 05-Aug-16.
  */
@@ -23,11 +31,9 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
 
     //region Properties
 
-    private RestaurantModel mRestaurantStorageService;
+    private IRestaurantService mIRestaurantService;
 
-    private UserModel mUserStorageService;
-
-    private List<Restaurant> mRestaurants;
+    private ObservableArrayList<Restaurant> mRestaurants;
 
     //endregion
 
@@ -39,8 +45,8 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
     }
 
     public void setRestaurants(List<Restaurant> restaurants) {
-        mRestaurants = restaurants;
-
+        mRestaurants = new ObservableArrayList<>();
+        mRestaurants.addAll(restaurants);
         notifyPropertyChanged(BR.restaurants);
     }
 
@@ -48,12 +54,10 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public FavoriteRestaurantViewModel(INavigator navigator, RestaurantModel restaurantStorageService, UserModel userStorageService) {
+    public FavoriteRestaurantViewModel(INavigator navigator, IRestaurantService restaurantService) {
         super(navigator);
 
-        mRestaurantStorageService = restaurantStorageService;
-
-        mUserStorageService = userStorageService;
+        mIRestaurantService = restaurantService;
     }
 
     //endregion
@@ -64,7 +68,6 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
     public void onCreate() {
         super.onCreate();
         loadFavoriteRestaurants();
-        getNavigator().showBusyIndicator("");
     }
 
     @Override
@@ -90,34 +93,20 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
     private void loadFavoriteRestaurants() {
         User user = getNavigator().getApplication().getLoginUser();
 
-        mUserStorageService.loadFavoriteRestaurants(user, new ICallback<List<Restaurant>>() {
-            @Override
-            public void onResult(List<Restaurant> result) {
-                setRestaurants(result);
-                getNavigator().hideBusyIndicator();
-            }
+        mIRestaurantService.getFavoriteRestaurants(getNavigator().getApplication().getLoginUser().getId(), 0, Configuration.NUMBER_RECORDS_PER_PAGE)
+                .enqueue(new Callback<APIResponse<List<Restaurant>>>() {
+                    @Override
+                    public void onResponse(Call<APIResponse<List<Restaurant>>> call, Response<APIResponse<List<Restaurant>>> response) {
+                        if (response.isSuccessful() && response.body().isSuccess()) {
+                            setRestaurants(response.body().getData());
+                        }
+                    }
 
-            @Override
-            public void onFailure(Throwable t) {
-                getNavigator().hideBusyIndicator();
-            }
-        });
-    }
+                    @Override
+                    public void onFailure(Call<APIResponse<List<Restaurant>>> call, Throwable t) {
 
-    public void removeFavoriteRestaurant(final Restaurant restaurant) {
-        Log.d("TAG", "REMOVE FAVORITE RESTAURANT");
-
-        mUserStorageService.removeFavoriteRestaurant(getNavigator().getApplication().getLoginUser(), restaurant, new ICallback<Boolean>() {
-            @Override
-            public void onResult(Boolean result) {
-                getEventBus().post(restaurant);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                Log.e("TAG", "", t);
-            }
-        });
+                    }
+                });
     }
 
     //endregion
@@ -154,5 +143,23 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
             getNavigator().navigateTo(Constants.LOGIN_PAGE);
         }
 
+    }
+
+    public void getNextPageRestaurants(long currentOffset) {
+        long nextOffset = currentOffset + 1;
+
+        mIRestaurantService.getFavoriteRestaurants(getNavigator().getApplication().getLoginUser().getId(), nextOffset, Configuration.NUMBER_RECORDS_PER_PAGE).enqueue(new Callback<APIResponse<List<Restaurant>>>() {
+            @Override
+            public void onResponse(Call<APIResponse<List<Restaurant>>> call, Response<APIResponse<List<Restaurant>>> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().isSuccess()) {
+                        mRestaurants.addAll(response.body().getData());
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<APIResponse<List<Restaurant>>> call, Throwable t) {
+            }
+        });
     }
 }

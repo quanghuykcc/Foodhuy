@@ -1,6 +1,7 @@
 package com.devlin.core.viewmodel;
 
 import android.databinding.Bindable;
+import android.databinding.ObservableArrayList;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -9,8 +10,9 @@ import com.devlin.core.BR;
 import com.devlin.core.R;
 import com.devlin.core.model.entities.Category;
 import com.devlin.core.model.entities.Restaurant;
+import com.devlin.core.model.responses.APIResponse;
 import com.devlin.core.model.services.Configuration;
-import com.devlin.core.model.services.clouds.RestaurantCloudService;
+import com.devlin.core.model.services.clouds.IRestaurantService;
 import com.devlin.core.model.services.storages.RestaurantModel;
 import com.devlin.core.model.services.storages.UserModel;
 import com.devlin.core.view.Constants;
@@ -22,6 +24,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Created by Administrator on 7/27/2016.
  */
@@ -31,15 +37,12 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
 
     private static final String TAG = "RestaurantByCategoryViewModel";
 
-    private List<Restaurant> mRestaurants;
+    private ObservableArrayList<Restaurant> mRestaurants;
 
     private Category mCategory;
 
-    private RestaurantModel mRestaurantStorageService;
+    private IRestaurantService mIRestaurantService;
 
-    private UserModel mUserStorageService;
-
-    private RestaurantCloudService mRestaurantCloudService;
 
     //endregion
 
@@ -59,8 +62,8 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
     }
 
     public void setRestaurants(List<Restaurant> restaurants) {
-        mRestaurants = restaurants;
-
+        mRestaurants = new ObservableArrayList<>();
+        mRestaurants.addAll(restaurants);
         notifyPropertyChanged(BR.restaurants);
     }
 
@@ -73,14 +76,10 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public RestaurantByCategoryViewModel(INavigator navigator, RestaurantModel restaurantStorageService, UserModel userStorageService, RestaurantCloudService restaurantCloudService) {
+    public RestaurantByCategoryViewModel(INavigator navigator, IRestaurantService restaurantService) {
         super(navigator);
 
-        mRestaurantStorageService = restaurantStorageService;
-
-        mUserStorageService = userStorageService;
-
-        mRestaurantCloudService = restaurantCloudService;
+        mIRestaurantService = restaurantService;
     }
 
     public RestaurantByCategoryViewModel() {
@@ -94,15 +93,13 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        getNavigator().showBusyIndicator("Đang tải...");
+        getEventBus().register(this);
+        loadFirstPage();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
-        getEventBus().register(this);
     }
 
     @Override
@@ -129,105 +126,34 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
         getNavigator().getApplication().getCurrentActivity().setTitle(category.getName());
 
         setCategory(category);
-
-        mRestaurantCloudService.getRestaurantsByCategory(category, 0, 20, new ICallback<List<Restaurant>>() {
-            @Override
-            public void onResult(List<Restaurant> result) {
-                setRestaurants(result);
-
-                getNavigator().hideBusyIndicator();
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                getNavigator().hideBusyIndicator();
-            }
-        });
-
-        /*mRestaurantStorageService.getRestaurantsByCategory(category, new ICallback<List<Restaurant>>() {
-            @Override
-            public void onResult(List<Restaurant> result) {
-                setRestaurants(result);
-                getNavigator().hideBusyIndicator();
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                getNavigator().hideBusyIndicator();
-            }
-        });
-
-        getEventBus().unregister(this);*/
     }
 
     //endregion
 
     //region Private Methods
 
-    private void addFavoriteRestaurant(final View view, Restaurant restaurant) {
-        Log.d("TAG", "ADD FAVORITE RESTAURANT");
-
-        mUserStorageService.addFavoriteRestaurant(getNavigator().getApplication().getLoginUser(), restaurant, new ICallback<Boolean>() {
+    private void loadFirstPage() {
+        mIRestaurantService.getRestaurantsByCategory(mCategory.getId(), 0, Configuration.NUMBER_RECORDS_PER_PAGE).enqueue(new Callback<APIResponse<List<Restaurant>>>() {
             @Override
-            public void onResult(Boolean result) {
-                if (result == true) {
-                    Log.d("TAG", "ADD FAVORITE RESTAURANT SUCCESS");
-                    view.setBackgroundColor(ContextCompat.getColor(getNavigator().getApplication().getCurrentActivity(), R.color.colorPrimary));
+            public void onResponse(Call<APIResponse<List<Restaurant>>> call, Response<APIResponse<List<Restaurant>>> response) {
+                if (response.isSuccessful() && response.body().isSuccess()) {
+                    setRestaurants(response.body().getData());
+                }
+                else {
+
                 }
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                Log.e("TAG", "", t);
+            public void onFailure(Call<APIResponse<List<Restaurant>>> call, Throwable t) {
+
             }
         });
-    }
-
-    private void removeFavoriteRestaurant(final View view, Restaurant restaurant) {
-        Log.d("TAG", "REMOVE FAVORITE RESTAURANT");
-
-        mUserStorageService.removeFavoriteRestaurant(getNavigator().getApplication().getLoginUser(), restaurant, new ICallback<Boolean>() {
-            @Override
-            public void onResult(Boolean result) {
-                Log.d("TAG", "REMOVE FAVORITE RESTAURANT SUCCESS");
-                view.setBackgroundColor(ContextCompat.getColor(getNavigator().getApplication().getCurrentActivity(), R.color.colorWhite));
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                Log.e("TAG", "", t);
-            }
-        });
-    }
-
-    public boolean isFavoriteRestaurant(Restaurant restaurant) {
-        if (getNavigator().getApplication().isUserLoggedIn()) {
-            if (getNavigator().getApplication().getLoginUser().getFavoriteRestaurant().contains(restaurant)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     //endregion
 
     //region Public Methods
-
-    public void handleFavoriteRestaurantViewClick(View view, Restaurant restaurant) {
-
-        if (!getNavigator().getApplication().isUserLoggedIn()) {
-            getNavigator().navigateTo(Constants.LOGIN_PAGE);
-            return;
-        }
-
-        if (!isFavoriteRestaurant(restaurant)) {
-            addFavoriteRestaurant(view, restaurant);
-            return;
-        }
-
-        removeFavoriteRestaurant(view, restaurant);
-    }
 
     public void showRestaurantDetails(Restaurant restaurant) {
         getNavigator().navigateTo(Constants.RESTAURANT_DETAIL_PAGE);
@@ -251,17 +177,17 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
 
     public void getNextPageRestaurants(long currentOffset) {
         long nextOffset = currentOffset + 1;
-
-        mRestaurantCloudService.getRestaurantsByCategory(mCategory, nextOffset, Configuration.NUMBER_RECORDS_PER_PAGE, new ICallback<List<Restaurant>>() {
+        mIRestaurantService.getRestaurantsByCategory(mCategory.getId(), nextOffset, Configuration.NUMBER_RECORDS_PER_PAGE).enqueue(new Callback<APIResponse<List<Restaurant>>>() {
             @Override
-            public void onResult(List<Restaurant> result) {
-                mRestaurants.addAll(result);
-
-                notifyPropertyChanged(BR.restaurants);
+            public void onResponse(Call<APIResponse<List<Restaurant>>> call, Response<APIResponse<List<Restaurant>>> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().isSuccess()) {
+                        mRestaurants.addAll(response.body().getData());
+                    }
+                }
             }
-
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<APIResponse<List<Restaurant>>> call, Throwable t) {
             }
         });
     }

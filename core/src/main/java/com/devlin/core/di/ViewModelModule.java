@@ -1,13 +1,12 @@
 package com.devlin.core.di;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.devlin.core.model.services.clouds.CategoryCloudService;
 import com.devlin.core.model.services.clouds.ICategoryService;
+import com.devlin.core.model.services.clouds.IFavoriteRestaurantService;
 import com.devlin.core.model.services.clouds.IRestaurantService;
 import com.devlin.core.model.services.clouds.IUserService;
-import com.devlin.core.model.services.clouds.RestaurantCloudService;
-import com.devlin.core.model.services.clouds.UserCloudService;
 import com.devlin.core.model.services.storages.CategoryModel;
+import com.devlin.core.model.services.storages.FavoriteRestaurantModel;
 import com.devlin.core.model.services.storages.RestaurantModel;
 import com.devlin.core.model.services.storages.UserModel;
 import com.devlin.core.view.INavigator;
@@ -38,14 +37,14 @@ public class ViewModelModule {
 
     @Provides
     @Singleton
-    public RestaurantByCategoryViewModel providesRestaurantByCategoryViewModel(INavigator navigator, RestaurantModel restaurantStorageService, UserModel userStorageService, RestaurantCloudService restaurantCloudService) {
-        return new RestaurantByCategoryViewModel(navigator, restaurantStorageService, userStorageService, restaurantCloudService);
+    public RestaurantByCategoryViewModel providesRestaurantByCategoryViewModel(INavigator navigator, IRestaurantService restaurantService) {
+        return new RestaurantByCategoryViewModel(navigator, restaurantService);
     }
 
     @Provides
     @Singleton
-    public CategoryViewModel providesCategoryViewModel(INavigator navigator, CategoryModel categoryStorageService, CategoryCloudService categoryCloudService, JobManager jobManager, ICategoryService categoryService) {
-        return new CategoryViewModel(navigator, categoryStorageService, categoryCloudService, jobManager, categoryService);
+    public CategoryViewModel providesCategoryViewModel(INavigator navigator, CategoryModel categoryStorageService, JobManager jobManager, ICategoryService categoryService) {
+        return new CategoryViewModel(navigator, categoryStorageService, jobManager, categoryService);
     }
 
     @Provides
@@ -56,32 +55,32 @@ public class ViewModelModule {
 
     @Provides
     @Singleton
-    MainViewModel providesMainViewModel(INavigator navigator) {
-        return new MainViewModel(navigator);
+    MainViewModel providesMainViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, UserModel userModel) {
+        return new MainViewModel(navigator, favoriteRestaurantModel, userModel);
     }
 
     @Provides
     @Singleton
-    LoginViewModel providesLoginViewModel(INavigator navigator, UserModel userModel, IUserService userService, JobManager jobManager) {
-        return new LoginViewModel(navigator, userModel, userService, jobManager);
+    LoginViewModel providesLoginViewModel(INavigator navigator, UserModel userModel, IUserService userService, JobManager jobManager, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService iFavoriteRestaurantService) {
+        return new LoginViewModel(navigator, userModel, userService, jobManager, favoriteRestaurantModel, iFavoriteRestaurantService);
     }
 
     @Provides
     @Singleton
-    RegisterViewModel providesRegisterViewModel(INavigator navigator, UserModel storageService) {
-        return new RegisterViewModel(navigator, storageService);
+    RegisterViewModel providesRegisterViewModel(INavigator navigator, IUserService userService) {
+        return new RegisterViewModel(navigator, userService);
     }
 
     @Provides
     @Singleton
-    LatestRestaurantViewModel providesLatestRestaurantViewModel(INavigator navigator, RestaurantModel restaurantModel, IRestaurantService restaurantService, JobManager jobManager) {
-        return new LatestRestaurantViewModel(navigator, restaurantModel, restaurantService, jobManager);
+    LatestRestaurantViewModel providesLatestRestaurantViewModel(INavigator navigator, RestaurantModel restaurantModel, IRestaurantService restaurantService, JobManager jobManager, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService iFavoriteRestaurantService) {
+        return new LatestRestaurantViewModel(navigator, restaurantModel, restaurantService, jobManager, favoriteRestaurantModel, iFavoriteRestaurantService);
     }
 
     @Provides
     @Singleton
-    FavoriteRestaurantViewModel providesFavoriteRestaurantViewModel(INavigator navigator, RestaurantModel restaurantStorageService, UserModel userStorageService) {
-        return new FavoriteRestaurantViewModel(navigator, restaurantStorageService, userStorageService);
+    FavoriteRestaurantViewModel providesFavoriteRestaurantViewModel(INavigator navigator, IRestaurantService restaurantService) {
+        return new FavoriteRestaurantViewModel(navigator, restaurantService);
     }
 
     @Provides

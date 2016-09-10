@@ -8,6 +8,7 @@ import com.devlin.core.model.entities.User;
 import com.devlin.core.model.services.Configuration;
 import com.devlin.core.view.ICallback;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,133 +41,25 @@ public class RestaurantModel extends BaseModel {
 
     //region Override Methods
 
-    public void getRestaurants(long offset, long limit, ICallback<List<Restaurant>> callback) {
+    public void getLatestRestaurantsAsync(final ICallback<List<Restaurant>> callback) {
+        final Realm realm = Realm.getDefaultInstance();
 
-    }
-
-
-    public void getAllRestaurantsAsync(final ICallback<List<Restaurant>> callback) {
-        Realm realm = Realm.getDefaultInstance();
-
-        final RealmResults<Restaurant> restaurants = realm.where(Restaurant.class).findAllAsync();
-
-        restaurants.addChangeListener(new RealmChangeListener<RealmResults<Restaurant>>() {
-            @Override
-            public void onChange(RealmResults<Restaurant> element) {
-                callback.onResult(element);
-
-                restaurants.removeChangeListener(this);
-            }
-        });
-    }
-
-    public void getRestaurantById(String id, final ICallback<Restaurant> callback) {
-
-        final Restaurant restaurant = mRealm.where(Restaurant.class).equalTo("id", id).findFirstAsync();
-
-        restaurant.addChangeListener(new RealmChangeListener<Restaurant>() {
-            @Override
-            public void onChange(Restaurant element) {
-                callback.onResult(element);
-
-                restaurant.removeChangeListener(this);
-            }
-        });
-
-    }
-
-    public void saveRestaurant(final Restaurant restaurant, final ICallback<Boolean> callback) {
-
-        mRealm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm bgRealm) {
-
-                Restaurant realmRestaurant = bgRealm.copyToRealm(restaurant);
-
-            }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                callback.onResult(true);
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(Throwable error) {
-                callback.onFailure(error);
-            }
-        });
-
-    }
-
-    public RealmResults<Restaurant> getLatestRestaurants() {
-        Realm realm = Realm.getDefaultInstance();
         RealmResults<Restaurant> restaurants = realm.where(Restaurant.class).findAllSortedAsync("mCreatedAt", Sort.DESCENDING);
-        return restaurants;
-    }
-
-    public void saveRestaurants(final List<Restaurant> restaurants, final ICallback<Boolean> callback) {
-        mRealm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm bgRealm) {
-
-                bgRealm.copyToRealmOrUpdate(restaurants);
-
-            }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                callback.onResult(true);
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(Throwable error) {
-                callback.onFailure(error);
-            }
-        });
-    }
-
-    public void getRestaurantsByCategory(Category category, long offset, long limit, final ICallback<List<Restaurant>> callback) {
-
-        final RealmResults<Restaurant> restaurants = mRealm.where(Restaurant.class).equalTo("mCategoryId", category.getId()).findAllSortedAsync("mCreatedAt", Sort.DESCENDING);
 
         restaurants.addChangeListener(new RealmChangeListener<RealmResults<Restaurant>>() {
             @Override
             public void onChange(RealmResults<Restaurant> element) {
-                callback.onResult(element);
-
-                restaurants.removeChangeListener(this);
+                List<Restaurant> detachedRestaurants = realm.copyFromRealm(element);
+                callback.onResult(detachedRestaurants);
             }
         });
     }
 
-    public void addComment(final Comment comment, final Restaurant restaurant, final ICallback<Boolean> callback) {
-
-        final int restaurantId = restaurant.getId();
-
-        final String userId = comment.getCommenter().getId();
-
-        mRealm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Restaurant restaurant = realm.where(Restaurant.class).equalTo("mId", restaurantId).findFirst();
-
-                User user = realm.where(User.class).equalTo("mId", userId).findFirst();
-
-                comment.setCommenter(user);
-
-                restaurant.getComments().add(comment);
-            }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                callback.onResult(true);
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(Throwable error) {
-                callback.onFailure(error);
-            }
-        });
+    public List<Restaurant> getLatestRestaurants() {
+        final Realm realm = Realm.getDefaultInstance();
+        RealmResults<Restaurant> restaurants = realm.where(Restaurant.class).findAllSorted("mCreatedAt", Sort.DESCENDING);
+        List<Restaurant> detachedRestaurants = realm.copyFromRealm(restaurants);
+        return detachedRestaurants;
     }
 
     public Date getLatestSynchronizeTimestamp() {

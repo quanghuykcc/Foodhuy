@@ -6,14 +6,14 @@ import com.birbit.android.jobqueue.JobManager;
 import com.devlin.core.BR;
 import com.devlin.core.event.LoggedInEvent;
 import com.devlin.core.job.BasicJob;
+import com.devlin.core.job.FetchFavoriteRestaurantJob;
 import com.devlin.core.job.LogInJob;
 import com.devlin.core.model.entities.User;
+import com.devlin.core.model.services.clouds.IFavoriteRestaurantService;
 import com.devlin.core.model.services.clouds.IUserService;
-import com.devlin.core.model.services.clouds.UserCloudService;
+import com.devlin.core.model.services.storages.FavoriteRestaurantModel;
 import com.devlin.core.model.services.storages.UserModel;
-import com.devlin.core.view.BaseApplication;
 import com.devlin.core.view.Constants;
-import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -33,6 +33,10 @@ public class LoginViewModel extends BaseViewModel {
     private IUserService mIUserService;
 
     private JobManager mJobManager;
+
+    private FavoriteRestaurantModel mFavoriteRestaurantModel;
+
+    private IFavoriteRestaurantService mIFavoriteRestaurantService;
 
     private User mUser;
 
@@ -69,7 +73,7 @@ public class LoginViewModel extends BaseViewModel {
         super();
     }
 
-    public LoginViewModel(INavigator navigator, UserModel userModel, IUserService userService, JobManager jobManager) {
+    public LoginViewModel(INavigator navigator, UserModel userModel, IUserService userService, JobManager jobManager, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService iFavoriteRestaurantService) {
         super(navigator);
 
         mUserModel = userModel;
@@ -77,6 +81,10 @@ public class LoginViewModel extends BaseViewModel {
         mIUserService = userService;
 
         mJobManager = jobManager;
+
+        mFavoriteRestaurantModel = favoriteRestaurantModel;
+
+        mIFavoriteRestaurantService = iFavoriteRestaurantService;
     }
 
     //endregion
@@ -153,6 +161,7 @@ public class LoginViewModel extends BaseViewModel {
         if (loggedInEvent.isSuccess()) {
             getNavigator().getApplication().setLoginUser(loggedInEvent.getLoggedInUser());
             getNavigator().hideBusyIndicator();
+            mJobManager.addJobInBackground(new FetchFavoriteRestaurantJob(BasicJob.UI_HIGH, mFavoriteRestaurantModel, mIFavoriteRestaurantService, loggedInEvent.getLoggedInUser()));
             getNavigator().goBack();
         }
 

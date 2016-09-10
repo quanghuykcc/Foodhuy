@@ -20,11 +20,12 @@ public class User extends RealmObject {
 
     @SerializedName("id")
     @PrimaryKey
-    private String mId;
+    private int mId;
 
     @SerializedName("name")
     private String mUserName;
 
+    @Ignore
     @SerializedName("password")
     private String mPassword;
 
@@ -63,11 +64,11 @@ public class User extends RealmObject {
         mFavoriteRestaurant = favoriteRestaurant;
     }
 
-    public String getId() {
+    public int getId() {
         return mId;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         mId = id;
     }
 

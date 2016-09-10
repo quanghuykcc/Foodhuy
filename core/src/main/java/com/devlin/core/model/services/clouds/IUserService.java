@@ -1,7 +1,10 @@
 package com.devlin.core.model.services.clouds;
 
+import com.devlin.core.model.entities.FavoriteRestaurant;
 import com.devlin.core.model.entities.User;
 import com.devlin.core.model.responses.APIResponse;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -14,9 +17,9 @@ import retrofit2.http.Query;
  */
 public interface IUserService {
 
-    @POST("/api/v1/authenticate/sign-in")
+    @POST("/foody_api_huy/api/v1/authenticate/sign-in")
     Call<APIResponse<User>> logIn(@Query("email") String email, @Query("password") String password);
 
-    @POST("/api/v1/authenticate/sign-up")
+    @POST("/foody_api_huy/api/v1/authenticate/sign-up")
     Call<APIResponse<Boolean>> signUp(@Query("email") String email, @Query("password") String password, @Query("name") String name);
 }
