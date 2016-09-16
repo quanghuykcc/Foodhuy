@@ -3,7 +3,10 @@ package com.devlin.core.viewmodel;
 import android.databinding.Bindable;
 
 import com.devlin.core.BR;
+import com.devlin.core.model.entities.FavoriteRestaurant;
 import com.devlin.core.model.entities.Restaurant;
+import com.devlin.core.model.services.clouds.IFavoriteRestaurantService;
+import com.devlin.core.model.services.storages.FavoriteRestaurantModel;
 import com.devlin.core.model.services.storages.RestaurantModel;
 import com.devlin.core.model.services.storages.UserModel;
 import com.devlin.core.view.INavigator;
@@ -20,20 +23,22 @@ public class RestaurantViewModel extends BaseViewModel {
 
     private Restaurant mRestaurant;
 
-    private UserModel mUserStorageService;
+    private boolean mIsFavorite;
 
+    private FavoriteRestaurantModel mFavoriteRestaurantModel;
 
-    private RestaurantModel mRestaurantStorageService;
+    private IFavoriteRestaurantService mIFavoriteRestaurantService;
+
     //endregion
 
     //region Constructors
 
-    public RestaurantViewModel(INavigator navigator, RestaurantModel restaurantStorageService, UserModel userStorageService) {
+    public RestaurantViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService iFavoriteRestaurantService) {
         super(navigator);
 
-        mUserStorageService = userStorageService;
+        mFavoriteRestaurantModel = favoriteRestaurantModel;
 
-        mRestaurantStorageService = restaurantStorageService;
+        mIFavoriteRestaurantService = iFavoriteRestaurantService;
     }
 
     //endregion
@@ -51,6 +56,21 @@ public class RestaurantViewModel extends BaseViewModel {
         notifyPropertyChanged(BR.restaurant);
     }
 
+    @Bindable
+    public boolean isFavorite() {
+        return mIsFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        mIsFavorite = favorite;
+
+        notifyPropertyChanged(BR.favorite);
+    }
+
+    @Override
+    public INavigator getNavigator() {
+        return super.getNavigator();
+    }
 
     //endregion
 
@@ -60,7 +80,7 @@ public class RestaurantViewModel extends BaseViewModel {
     public void onCreate() {
         super.onCreate();
 
-        getEventBus().register(this);
+        register();
     }
 
     @Override
@@ -77,16 +97,20 @@ public class RestaurantViewModel extends BaseViewModel {
     public void onDestroy() {
         super.onDestroy();
 
-        getEventBus().unregister(this);
+        unregister();
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void event(Restaurant restaurant) {
         setRestaurant(restaurant);
 
-        getNavigator().getApplication().getCurrentActivity().setTitle(restaurant.getName());
+        if (getNavigator().getApplication().isUserLoggedIn()) {
+            FavoriteRestaurant favoriteRestaurant = mFavoriteRestaurantModel.getByUserAndRestaurant(getNavigator().getApplication().getLoginUser().getId(), mRestaurant.getId());
+            if (favoriteRestaurant != null && favoriteRestaurant.isLoaded() && favoriteRestaurant.isValid()) {
+                setFavorite(true);
+            }
+        }
 
-        getEventBus().unregister(this);
     }
 
     //endregion

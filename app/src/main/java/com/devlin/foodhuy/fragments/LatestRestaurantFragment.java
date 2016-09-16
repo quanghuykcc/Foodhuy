@@ -24,11 +24,6 @@ import com.devlin.foodhuy.adapters.binder.CompositeItemBinder;
 import com.devlin.foodhuy.adapters.binder.RestaurantBinder;
 import com.devlin.foodhuy.databinding.FragmentLatestRestaurantBinding;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.List;
-
 /**
  * Created by Administrator on 8/2/2016.
  */
@@ -47,7 +42,6 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         App.sharedComponent().inject(this);
-        mViewModel.getEventBus().register(this);
         super.onCreate(savedInstanceState);
     }
 
@@ -78,7 +72,7 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
 
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        mLastestRestaurantListAdapter = new BindingRecyclerViewAdapter<Restaurant, LatestRestaurantViewModel>(new CompositeItemBinder<Restaurant>(new RestaurantBinder(BR.restaurant, R.layout.item_latest_restaurant)), null);
+        mLastestRestaurantListAdapter = new BindingRecyclerViewAdapter(new CompositeItemBinder<Restaurant>(new RestaurantBinder(BR.restaurant, R.layout.item_latest_restaurant)), null);
 
         mLastestRestaurantListAdapter.setViewModel(mViewModel);
 
@@ -100,22 +94,7 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mViewModel.getEventBus().unregister(this);
     }
-
-    //endregion
-
-    //region Subcribe Methods
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(List<Integer> indexList) {
-        if (mLastestRestaurantListAdapter != null) {
-            for (Integer i : indexList) {
-                mLastestRestaurantListAdapter.notifyItemChanged(i);
-            }
-        }
-    }
-
 
     //endregion
 }

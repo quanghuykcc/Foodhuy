@@ -43,19 +43,10 @@
                 android:textColor="#333333"
                 android:textSize="13sp"
                 android:id="@+id/text_view_content_comment"
-                android:layout_below="@+id/text_view_title_comment"
-                android:layout_toRightOf="@+id/commenter_avatar"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{comment.title}"
-                android:textColor="#333333"
-                android:textSize="13sp"
-                android:textStyle="italic|bold"
-                android:id="@+id/text_view_title_comment"
                 android:layout_below="@+id/text_view_commenter_name"
                 android:layout_toRightOf="@+id/commenter_avatar"/>
+
+
 
         </RelativeLayout>
 

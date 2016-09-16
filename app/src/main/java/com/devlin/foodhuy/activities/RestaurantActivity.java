@@ -32,6 +32,7 @@ public class RestaurantActivity extends BaseActivity<ActivityRestaurantBinding, 
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.comment_recycler_view);
 
@@ -54,7 +55,7 @@ public class RestaurantActivity extends BaseActivity<ActivityRestaurantBinding, 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
+                mViewModel.getNavigator().goBack();
                 return true;
         }
 

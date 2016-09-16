@@ -6,18 +6,15 @@ import android.util.Log;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.devlin.core.event.FetchedFavoriteRestaurantEvent;
 import com.devlin.core.model.entities.FavoriteRestaurant;
 import com.devlin.core.model.entities.User;
 import com.devlin.core.model.responses.APIResponse;
 import com.devlin.core.model.services.clouds.IFavoriteRestaurantService;
-import com.devlin.core.model.services.clouds.IUserService;
 import com.devlin.core.model.services.storages.FavoriteRestaurantModel;
 
 import java.util.Date;
 import java.util.List;
 
-import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -82,10 +79,6 @@ public class FetchFavoriteRestaurantJob extends BasicJob {
                     mFavoriteRestaurantModel.cacheFavoriteRestaurants(apiResponse.getData());
 
                     mFavoriteRestaurantModel.updateLatestSynchronizeTimestamp(apiResponse.getLastSyncTimestamp());
-
-                    List<FavoriteRestaurant> favoriteRestaurants = mFavoriteRestaurantModel.getFavoriteRestaurantsOfUser(mLoggedInUser);
-
-                    getEventBus().post(new FetchedFavoriteRestaurantEvent(true, favoriteRestaurants));
                     return;
                 }
                 else {
@@ -95,7 +88,6 @@ public class FetchFavoriteRestaurantJob extends BasicJob {
 
             }
             else {
-                getEventBus().post(new FetchedFavoriteRestaurantEvent(false, apiResponse.getMessage()));
                 Log.d(TAG, apiResponse.getMessage());
                 return;
             }

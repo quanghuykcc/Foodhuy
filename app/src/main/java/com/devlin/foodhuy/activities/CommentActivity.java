@@ -27,7 +27,7 @@ public class CommentActivity extends BaseActivity<ActivityCommentBinding, Commen
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        setTitle("Viết bình luận");
+        setTitle(getString(R.string.write_comment));
     }
 
     @Override
@@ -41,12 +41,12 @@ public class CommentActivity extends BaseActivity<ActivityCommentBinding, Commen
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_add_comment) {
+            mViewModel.addCommentCommand();
             return true;
         }
 
         else if (id == android.R.id.home) {
-            onBackPressed();
-
+            mViewModel.getNavigator().goBack();
             return true;
         }
 

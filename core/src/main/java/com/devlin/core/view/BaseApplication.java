@@ -3,6 +3,7 @@ package com.devlin.core.view;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.devlin.core.model.entities.FavoriteRestaurant;
 import com.devlin.core.model.entities.User;

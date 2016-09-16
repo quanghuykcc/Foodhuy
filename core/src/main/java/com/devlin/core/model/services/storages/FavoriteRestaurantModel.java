@@ -141,5 +141,14 @@ public class FavoriteRestaurantModel extends BaseModel {
         return detachedFavoriteRestaurants;
     }
 
+    public FavoriteRestaurant getByUserAndRestaurant(int userId, int restaurantId) {
+        Realm realm = Realm.getDefaultInstance();
+        FavoriteRestaurant favoriteRestaurant = realm.where(FavoriteRestaurant.class)
+                                                    .equalTo("mUserId", userId)
+                                                    .equalTo("mRestaurantId", restaurantId)
+                                                    .findFirst();
+        return favoriteRestaurant;
+    }
+
     //endregion
 }

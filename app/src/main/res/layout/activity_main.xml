@@ -16,7 +16,6 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         tools:openDrawer="start"
-        android:theme="@style/AppTheme.NoBackground"
         tools:context="com.devlin.foodhuy.activities.MainActivity">
 
         <include

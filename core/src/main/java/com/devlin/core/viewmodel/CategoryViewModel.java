@@ -11,10 +11,13 @@ import com.devlin.core.job.FetchCategoryJob;
 import com.devlin.core.model.entities.Category;
 import com.devlin.core.model.services.clouds.ICategoryService;
 import com.devlin.core.model.services.storages.CategoryModel;
+import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.List;
 
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
@@ -59,12 +62,6 @@ public class CategoryViewModel extends BaseViewModel {
 
     //region Getter and Setter
 
-
-    @Override
-    public EventBus getEventBus() {
-        return super.getEventBus();
-    }
-
     @Bindable
     public RealmResults<Category> getCategories() {
         return mCategories;
@@ -84,21 +81,21 @@ public class CategoryViewModel extends BaseViewModel {
     public void onCreate() {
         super.onCreate();
 
-        getNavigator().showBusyIndicator("Đang tải...");
-
-        getEventBus().register(this);
-
         loadCategories();
     }
 
     @Override
     public void onStart() {
         super.onStart();
+
+        register();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+
+        unregister();
     }
 
     @Override
@@ -106,8 +103,6 @@ public class CategoryViewModel extends BaseViewModel {
         super.onDestroy();
 
         mCategories = null;
-
-        getEventBus().unregister(this);
     }
 
     //endregion
@@ -115,14 +110,20 @@ public class CategoryViewModel extends BaseViewModel {
     //region Private methods
 
     private void loadCategories() {
-        RealmResults<Category> categories = mCategoryStorageService.getAllCategories();
-        setCategories(categories);
-        getNavigator().hideBusyIndicator();
-
-        categories.addChangeListener(new RealmChangeListener<RealmResults<Category>>() {
+       mCategoryStorageService.getAllAsync(new ICallback<RealmResults<Category>>() {
             @Override
-            public void onChange(RealmResults<Category> element) {
-                setCategories(element);
+            public void onResult(RealmResults<Category> result) {
+                setCategories(result);
+                result.addChangeListener(new RealmChangeListener<RealmResults<Category>>() {
+                    @Override
+                    public void onChange(RealmResults<Category> element) {
+                        setCategories(element);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
             }
         });
 
@@ -134,7 +135,7 @@ public class CategoryViewModel extends BaseViewModel {
     //region Public Methods
 
     public void showRestaurantsByCategory(Category category) {
-        getEventBus().postSticky(category);
+        postSticky(category);
     }
 
     @Subscribe

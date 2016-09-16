@@ -2,8 +2,10 @@ package com.devlin.core.view;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -170,13 +172,6 @@ public class Navigator implements INavigator {
     @Override
     public boolean isBusyIndicatorShowing() {
         return mBusyIndicator != null && mBusyIndicator.isShowing();
-    }
-
-    @Override
-    public void navigateTo(int fragmentId, Fragment fragment) {
-        FragmentManager fragmentManager = getApplication().getCurrentActivity().getFragmentManager();
-
-        fragmentManager.beginTransaction().replace(fragmentId, fragment).commit();
     }
 
     //endregion

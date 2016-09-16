@@ -2,6 +2,7 @@ package com.devlin.core.model.services.clouds;
 
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.responses.APIResponse;
+import com.devlin.core.util.QueryDate;
 
 import java.util.Date;
 import java.util.List;
@@ -19,7 +20,7 @@ public interface IRestaurantService {
     Call<APIResponse<List<Restaurant>>> getRestaurants(@Query("offset") long offset, @Query("limit") long limit);
 
     @GET("/foody_api_huy/api/v1/restaurants")
-    Call<APIResponse<List<Restaurant>>> getNewRestaurants(@Query("last_sync_timestamp") Date lastSyncTimestamp);
+    Call<APIResponse<List<Restaurant>>> getNewRestaurants(@Query("last_sync_timestamp") QueryDate lastSyncTimestamp);
 
     @GET("/foody_api_huy/api/v1/restaurants")
     Call<APIResponse<List<Restaurant>>> getRestaurantsByCategory(@Query("category_id") int categoryId, @Query("offset") long offset, @Query("limit") long limit);

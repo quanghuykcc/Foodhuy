@@ -99,7 +99,7 @@ public class LoginViewModel extends BaseViewModel {
         mUser.setEmail("");
         mUser.setPassword("");
 
-        getEventBus().register(this);
+        register();
     }
 
     @Override
@@ -119,7 +119,7 @@ public class LoginViewModel extends BaseViewModel {
         mUser = null;
         mError = null;
 
-        getEventBus().unregister(this);
+        unregister();
     }
 
     //endregion

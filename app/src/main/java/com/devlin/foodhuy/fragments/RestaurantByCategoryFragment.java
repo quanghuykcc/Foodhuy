@@ -1,4 +1,5 @@
 package com.devlin.foodhuy.fragments;
+
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,7 +13,6 @@ import android.view.ViewGroup;
 
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.view.BaseFragment;
-import com.devlin.core.viewmodel.LatestRestaurantViewModel;
 import com.devlin.core.viewmodel.RestaurantByCategoryViewModel;
 import com.devlin.foodhuy.App;
 import com.devlin.foodhuy.BR;
@@ -20,7 +20,6 @@ import com.devlin.foodhuy.R;
 import com.devlin.foodhuy.adapters.BindingRecyclerViewAdapter;
 import com.devlin.foodhuy.adapters.DividerItemDecoration;
 import com.devlin.foodhuy.adapters.EndlessRecyclerViewScrollListener;
-import com.devlin.foodhuy.adapters.RestaurantByCategoryListAdapter;
 import com.devlin.foodhuy.adapters.binder.CompositeItemBinder;
 import com.devlin.foodhuy.adapters.binder.RestaurantBinder;
 import com.devlin.foodhuy.databinding.FragmentRestaurantByCategoryBinding;
@@ -87,6 +86,11 @@ public class RestaurantByCategoryFragment extends BaseFragment<FragmentRestauran
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 
     @Override

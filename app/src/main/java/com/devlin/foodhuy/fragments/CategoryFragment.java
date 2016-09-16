@@ -9,13 +9,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 
-import com.devlin.core.event.FetchedCategoryEvent;
 import com.devlin.core.view.BaseFragment;
 import com.devlin.core.viewmodel.CategoryViewModel;
 import com.devlin.foodhuy.App;
@@ -24,9 +22,6 @@ import com.devlin.foodhuy.R;
 import com.devlin.foodhuy.adapters.CategoryListAdapter;
 import com.devlin.foodhuy.adapters.DividerItemDecoration;
 import com.devlin.foodhuy.databinding.FragmentCategoryBinding;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,12 +61,12 @@ public class CategoryFragment extends BaseFragment<FragmentCategoryBinding, Cate
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getActivity().setTitle(getString(R.string.category));
-
         setBindingContentView(inflater, container, R.layout.fragment_category, BR.viewModel);
 
         View view =  mViewDataBinding.getRoot();
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.category_recycler_view);
+
+        getActivity().setTitle(getString(R.string.category));
 
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2, GridLayout.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -86,7 +81,10 @@ public class CategoryFragment extends BaseFragment<FragmentCategoryBinding, Cate
         recyclerView.setAdapter(mCategoryListAdapter);
 
         return view;
+
+
     }
+
 
     //endregion
 

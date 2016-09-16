@@ -1,27 +1,19 @@
 package com.devlin.core.viewmodel;
 
 import android.databinding.Bindable;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.devlin.core.BR;
-import com.devlin.core.event.FetchedFavoriteRestaurantEvent;
 import com.devlin.core.event.LoggedInEvent;
-import com.devlin.core.model.entities.FavoriteRestaurant;
-import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.entities.User;
 import com.devlin.core.model.services.storages.FavoriteRestaurantModel;
 import com.devlin.core.model.services.storages.UserModel;
-import com.devlin.core.util.Utils;
 import com.devlin.core.view.Constants;
-import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.List;
 
 /**
  * Created by Administrator on 7/26/2016.
@@ -59,11 +51,6 @@ public class MainViewModel extends BaseViewModel {
         return super.getNavigator();
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return super.getEventBus();
-    }
-
     @Bindable
     public User getUser() {
         return mUser;
@@ -83,7 +70,7 @@ public class MainViewModel extends BaseViewModel {
     public void onCreate() {
         super.onCreate();
 
-        getEventBus().register(this);
+        register();
     }
 
     @Override
@@ -100,7 +87,7 @@ public class MainViewModel extends BaseViewModel {
     public void onDestroy() {
         super.onDestroy();
 
-        getEventBus().unregister(this);
+        unregister();
     }
 
     //endregion
@@ -112,27 +99,6 @@ public class MainViewModel extends BaseViewModel {
         if (loggedInEvent.isSuccess()) {
             final User loggedInUser = loggedInEvent.getLoggedInUser();
             setUser(loggedInUser);
-            mFavoriteRestaurantModel.getFavoriteRestaurantsOfUserAsync(loggedInUser, new ICallback<List<FavoriteRestaurant>>() {
-                @Override
-                public void onResult(List<FavoriteRestaurant> result) {
-                    getNavigator().getApplication().setFavoriteRestaurantsOfUser(result);
-                    for (FavoriteRestaurant favoriteRestaurant : result) {
-                        Log.d(TAG, favoriteRestaurant.toString());
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-
-                }
-            });
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN, priority = 5)
-    public void event(FetchedFavoriteRestaurantEvent fetchedFavoriteRestaurantEvent) {
-        if (fetchedFavoriteRestaurantEvent.isSuccess()) {
-            getNavigator().getApplication().setFavoriteRestaurantsOfUser(fetchedFavoriteRestaurantEvent.getFavoriteRestaurants());
         }
     }
 
@@ -148,7 +114,7 @@ public class MainViewModel extends BaseViewModel {
         mFavoriteRestaurantModel.clearLatestSynchronizeTimestamp();
         mUserModel.clearLocalUsers();
 
-        getEventBus().post(Constants.ACTION_LOGGED_OUT);
+        post(Constants.ACTION_LOGGED_OUT);
 
         getNavigator().navigateTo(Constants.LOGIN_PAGE);
 

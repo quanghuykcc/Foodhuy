@@ -30,34 +30,27 @@ public class CategoryModel extends BaseModel {
 
     //endregion
 
-    public RealmResults<Category> getAllCategories() {
+    public RealmResults<Category> getAll() {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Category> categories = realm.where(Category.class).findAll();
         return categories;
     }
 
-    public void getAllCategoriesAsync(final ICallback<List<Category>> callback) {
+    public void getAllAsync(final ICallback<RealmResults<Category>> callback) {
         final Realm realm = Realm.getDefaultInstance();
 
         final RealmResults<Category> categories = realm.where(Category.class).findAllAsync();
         categories.addChangeListener(new RealmChangeListener<RealmResults<Category>>() {
             @Override
             public void onChange(RealmResults<Category> element) {
-                List<Category> unmanagedCategories = realm.copyFromRealm(element);
-                callback.onResult(unmanagedCategories);
+                callback.onResult(element);
                 categories.removeChangeListener(this);
             }
         });
     }
 
-    private void addNewOrUpdateCategory(Category category) {
-        Realm realm = Realm.getDefaultInstance();
 
-        realm.copyToRealmOrUpdate(category);
-    }
-
-
-    public Date getLatestSynchronizeTimestamp() {
+    public Date getLatestSynchronize() {
         Realm realm = Realm.getDefaultInstance();
 
         SyncHistory syncHistory = realm.where(SyncHistory.class).equalTo("mNameTable", CATEGORY_TABLE_NAME).findFirst();
@@ -69,8 +62,18 @@ public class CategoryModel extends BaseModel {
         return null;
     }
 
-    private void updateLatestSynchronizeTimestamp(Date latestSynchronizeTimestamp) {
+    public void addOrUpdate(Category category) {
         Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+        realm.copyToRealmOrUpdate(category);
+
+        realm.commitTransaction();
+    }
+
+    public void saveLatestSynchronize(Date latestSynchronizeTimestamp) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
 
         SyncHistory syncHistory = realm.where(SyncHistory.class).equalTo("mNameTable", CATEGORY_TABLE_NAME).findFirst();
 
@@ -80,37 +83,19 @@ public class CategoryModel extends BaseModel {
         }
 
         syncHistory.setLastSyncTimestamp(latestSynchronizeTimestamp);
-    }
-
-    public void handleFetchedCategories(List<Category> categories, Date latestSynchronizeTimestamp) {
-        Realm realm = Realm.getDefaultInstance();
-
-        realm.beginTransaction();
-
-        for (Category category : categories) {
-
-            Log.d(TAG, category.toString());
-            if (category.isDeleted()) {
-                deleteCategory(category);
-            }
-            else {
-                addNewOrUpdateCategory(category);
-            }
-        }
-
-        updateLatestSynchronizeTimestamp(latestSynchronizeTimestamp);
 
         realm.commitTransaction();
     }
 
-
-    private void deleteCategory(Category category) {
+    public void delete(Category category) {
         Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
 
         RealmResults<Category> deleteCategories = realm.where(Category.class).equalTo("mId", category.getId()).findAll();
         if (deleteCategories.size() > 0) {
             deleteCategories.deleteAllFromRealm();
         }
-    }
 
+        realm.commitTransaction();
+    }
 }

@@ -14,20 +14,15 @@ import android.view.ViewGroup;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.view.BaseFragment;
 import com.devlin.core.viewmodel.FavoriteRestaurantViewModel;
-import com.devlin.core.viewmodel.LatestRestaurantViewModel;
 import com.devlin.foodhuy.App;
 import com.devlin.foodhuy.BR;
 import com.devlin.foodhuy.R;
 import com.devlin.foodhuy.adapters.BindingRecyclerViewAdapter;
 import com.devlin.foodhuy.adapters.DividerItemDecoration;
 import com.devlin.foodhuy.adapters.EndlessRecyclerViewScrollListener;
-import com.devlin.foodhuy.adapters.FavoriteRestaurantListAdapter;
 import com.devlin.foodhuy.adapters.binder.CompositeItemBinder;
 import com.devlin.foodhuy.adapters.binder.RestaurantBinder;
 import com.devlin.foodhuy.databinding.FragmentFavoriteRestaurantBinding;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Created by Administrator on 8/2/2016.
@@ -50,8 +45,6 @@ public class FavoriteRestaurantFragment extends BaseFragment<FragmentFavoriteRes
     public void onCreate(@Nullable Bundle savedInstanceState) {
         App.sharedComponent().inject(this);
         super.onCreate(savedInstanceState);
-
-        mViewModel.getEventBus().register(this);
     }
 
     @Nullable
@@ -103,14 +96,8 @@ public class FavoriteRestaurantFragment extends BaseFragment<FragmentFavoriteRes
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        mViewModel.getEventBus().unregister(this);
     }
 
     //endregion
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(Restaurant removeRestaurant) {
-        mFavoriteRestaurantListAdapter.notifyDataSetChanged();
-    }
 }

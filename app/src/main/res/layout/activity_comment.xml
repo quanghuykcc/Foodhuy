@@ -46,26 +46,15 @@
                     android:layout_height="wrap_content"/>
 
             </LinearLayout>
-            
-            <EditText
-                android:layout_width="match_parent"
-                android:hint="Tiêu đề (không bắt buộc)"
-                android:padding="16dp"
-                android:textSize="14sp"
-                android:background="@android:color/transparent"
-                android:text="@={viewModel.comment.title}"
-                android:layout_height="wrap_content"/>
-
-            <include layout="@layout/divider"/>
 
             <EditText
                 android:layout_width="match_parent"
-                android:hint="Viết trên 100 từ, đúng chính tả, ngôn từ văn hóa, không spam... để được duyệt điểm thưởng"
+                android:hint="Viết trên 100 từ, đúng chính tả, ngôn từ văn hóa, không spam"
                 android:padding="16dp"
                 android:textSize="14sp"
                 android:gravity="top|left"
                 android:background="@android:color/transparent"
-                android:text="@={viewModel.comment.content}"
+                android:text="@={viewModel.content}"
                 android:layout_height="match_parent"/>
 
         </LinearLayout>

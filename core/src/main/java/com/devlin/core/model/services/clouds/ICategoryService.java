@@ -5,6 +5,7 @@ import android.util.Log;
 import com.devlin.core.model.entities.Category;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.responses.APIResponse;
+import com.devlin.core.util.QueryDate;
 
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,6 @@ public interface ICategoryService {
     Call<APIResponse<List<Category>>> getAllCategories();
 
     @GET("/foody_api_huy/api/v1/categories")
-    Call<APIResponse<List<Category>>> getNewCategories(@Query("last_sync_timestamp") Date lastSyncTimestamp);
+    Call<APIResponse<List<Category>>> getNewCategories(@Query("last_sync_timestamp") QueryDate lastSyncTimestamp);
 
 }

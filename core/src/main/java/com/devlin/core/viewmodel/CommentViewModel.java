@@ -1,20 +1,22 @@
 package com.devlin.core.viewmodel;
 
 import android.databinding.Bindable;
-import android.util.Log;
+import android.widget.Toast;
 
-import com.devlin.core.model.entities.Bundle;
+import com.devlin.core.BR;
 import com.devlin.core.model.entities.Comment;
 import com.devlin.core.model.entities.Restaurant;
+import com.devlin.core.model.responses.APIResponse;
+import com.devlin.core.model.services.clouds.ICommentService;
 import com.devlin.core.model.services.storages.RestaurantModel;
-import com.devlin.core.view.Constants;
-import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import com.devlin.core.BR;
 import org.greenrobot.eventbus.ThreadMode;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Administrator on 08-Aug-16.
@@ -23,11 +25,11 @@ public class CommentViewModel extends BaseViewModel {
 
     //region Properties
 
-    private Comment mComment;
+    private String mContent;
 
     private Restaurant mRestaurant;
 
-    private RestaurantModel mRestaurantStorageService;
+    private ICommentService mCommentService;
 
     //endregion
 
@@ -44,22 +46,26 @@ public class CommentViewModel extends BaseViewModel {
         notifyPropertyChanged(BR.restaurant);
     }
 
-    public Comment getComment() {
-        return mComment;
+    @Bindable
+    public String getContent() {
+        return mContent;
     }
 
-    public void setComment(Comment comment) {
-        mComment = comment;
+    public void setContent(String content) {
+        mContent = content;
+
+        notifyPropertyChanged(BR.content);
     }
 
     //endregion
 
     //region Constructors
 
-    public CommentViewModel(INavigator navigator, RestaurantModel restaurantStorageService) {
+    public CommentViewModel(INavigator navigator, ICommentService commentService) {
         super(navigator);
 
-        mRestaurantStorageService = restaurantStorageService;
+        mCommentService = commentService;
+
     }
 
     //endregion
@@ -70,11 +76,9 @@ public class CommentViewModel extends BaseViewModel {
     public void onCreate() {
         super.onCreate();
 
-        getEventBus().register(this);
+        register();
 
-        mComment = new Comment();
-        mComment.setContent("");
-        mComment.setTitle("");
+        mContent = "";
     }
 
     @Override
@@ -91,24 +95,67 @@ public class CommentViewModel extends BaseViewModel {
     public void onDestroy() {
         super.onDestroy();
 
-        getEventBus().unregister(this);
+        unregister();
 
         mRestaurant = null;
-        mComment = null;
+        mContent = null;
     }
 
     @Override
-    public EventBus getEventBus() {
-        return super.getEventBus();
+    public INavigator getNavigator() {
+        return super.getNavigator();
     }
 
     //endregion
 
-    //region Public Methods
+    //region Subcribe Methods
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void event(Restaurant restaurant) {
         setRestaurant(restaurant);
+    }
+
+    //endregion
+
+    //region Public methods
+
+    public void addCommentCommand() {
+        if (validate()) {
+            final Comment comment = new Comment();
+            comment.setContent(mContent);
+            comment.setCommenterId(getNavigator().getApplication().getLoginUser().getId());
+            comment.setTitle("");
+            comment.setRestaurantId(mRestaurant.getId());
+
+            mCommentService.add(comment).enqueue(new Callback<APIResponse<Comment>>() {
+                @Override
+                public void onResponse(Call<APIResponse<Comment>> call, Response<APIResponse<Comment>> response) {
+                    if (response != null && response.isSuccessful()
+                            && response.body() != null
+                            && response.body().isSuccess()) {
+                        post(comment);
+                    }
+                    showToast("Viết bình luận thất bại, vui lòng kiểm tra lại kết nối mạng", Toast.LENGTH_LONG);
+
+                }
+
+                @Override
+                public void onFailure(Call<APIResponse<Comment>> call, Throwable t) {
+                    showToast("Viết bình luận thất bại, vui lòng kiểm tra lại kết nối mạng", Toast.LENGTH_LONG);
+                }
+            });
+
+            getNavigator().goBack();
+        }
+    }
+
+    public boolean validate() {
+        if (mContent != null && !mContent.equals("")) {
+            return true;
+        }
+
+        showToast("Hãy điền nội dung bình luận trước khi Gửi", Toast.LENGTH_LONG);
+        return false;
     }
 
     //endregion

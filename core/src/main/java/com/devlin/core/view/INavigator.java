@@ -81,11 +81,4 @@ public interface INavigator {
      */
     boolean isBusyIndicatorShowing();
 
-    /**
-     * Navigate to fragment.
-     * @param fragmentId
-     * @param fragment
-     */
-    void navigateTo(int fragmentId, Fragment fragment);
-
 }

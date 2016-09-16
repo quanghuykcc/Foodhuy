@@ -4,12 +4,13 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.devlin.core.viewmodel.BaseViewModel;
+
+import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 
@@ -72,6 +73,21 @@ public class BaseFragment<B extends ViewDataBinding, V extends BaseViewModel> ex
     protected void setBindingContentView(LayoutInflater inflater, @Nullable ViewGroup container, int layoutResId, int variableId) {
         mViewDataBinding = DataBindingUtil.inflate(inflater, layoutResId, container, false);
         mViewDataBinding.setVariable(variableId, mViewModel);
+    }
+
+    protected final void register() {
+        EventBus eventBus = EventBus.getDefault();
+        if (!eventBus.isRegistered(this)) {
+            eventBus.register(this);
+        }
+    }
+
+    protected final void unregister() {
+        EventBus eventBus = EventBus.getDefault();
+        if (eventBus.isRegistered(this)) {
+            eventBus.unregister(this);
+        }
+
     }
 
     //endregion

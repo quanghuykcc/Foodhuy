@@ -11,6 +11,7 @@ import com.devlin.core.model.entities.Category;
 import com.devlin.core.model.responses.APIResponse;
 import com.devlin.core.model.services.clouds.ICategoryService;
 import com.devlin.core.model.services.storages.CategoryModel;
+import com.devlin.core.util.QueryDate;
 
 import java.util.Date;
 import java.util.List;
@@ -23,8 +24,6 @@ public class FetchCategoryJob extends BasicJob {
 
     //region Properties
     private ICategoryService mICategoryService;
-
-    private Realm mRealm;
 
     private CategoryModel mCategoryModel;
 
@@ -58,30 +57,38 @@ public class FetchCategoryJob extends BasicJob {
     public void onRun() throws Throwable {
         Call<APIResponse<List<Category>>> call;
 
-        Date latestSynchronizeTimestamp = mCategoryModel.getLatestSynchronizeTimestamp();
+        Date latestSynchronizeTimestamp = mCategoryModel.getLatestSynchronize();
 
         if (latestSynchronizeTimestamp != null) {
-            call = mICategoryService.getNewCategories(latestSynchronizeTimestamp);
-            Log.d(TAG, latestSynchronizeTimestamp.toString());
+            call = mICategoryService.getNewCategories(new QueryDate(latestSynchronizeTimestamp));
         }
         else {
             call = mICategoryService.getAllCategories();
         }
 
         Response<APIResponse<List<Category>>> response = call.execute();
-        if (response.isSuccessful()) {
+        if (response != null && response.isSuccessful()) {
             APIResponse<List<Category>> apiResponse = response.body();
-            if (apiResponse.isSuccess()) {
+
+            if (apiResponse != null && apiResponse.isSuccess()) {
                 if (apiResponse.getData().size() > 0) {
-                    mCategoryModel.handleFetchedCategories(apiResponse.getData(), apiResponse.getLastSyncTimestamp());
-                    return;
+                    for (Category category : apiResponse.getData()) {
+                        if (category.isDeleted()) {
+                            mCategoryModel.delete(category);
+                        }
+                        else {
+                            mCategoryModel.addOrUpdate(category);
+                        }
+                    }
                 }
+                mCategoryModel.saveLatestSynchronize(apiResponse.getLastSyncTimestamp());
             }
         }
     }
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
+
     }
 
     @Override
@@ -94,7 +101,7 @@ public class FetchCategoryJob extends BasicJob {
 
     @Override
     protected int getRetryLimit() {
-        return 5;
+        return 2;
     }
 
     //endregion

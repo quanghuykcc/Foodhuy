@@ -14,6 +14,7 @@ import com.devlin.core.model.responses.APIResponse;
 import com.devlin.core.model.services.Configuration;
 import com.devlin.core.model.services.clouds.IRestaurantService;
 import com.devlin.core.model.services.storages.RestaurantModel;
+import com.devlin.core.util.QueryDate;
 
 import java.util.Date;
 import java.util.List;
@@ -59,31 +60,41 @@ public class FetchRestaurantJob extends BasicJob {
     public void onRun() throws Throwable {
         Call<APIResponse<List<Restaurant>>> call;
 
-        Date latestSynchronizeTimestamp = mRestaurantModel.getLatestSynchronizeTimestamp();
+        Date latestSynchronizeTimestamp = mRestaurantModel.getLatestSynchronize();
 
         if (latestSynchronizeTimestamp != null) {
-            call = mIRestaurantService.getNewRestaurants(latestSynchronizeTimestamp);
+            call = mIRestaurantService.getNewRestaurants(new QueryDate(latestSynchronizeTimestamp));
         }
         else {
             call = mIRestaurantService.getRestaurants(0, Configuration.NUMBER_CACHE_RESTAURANTS);
         }
 
         Response<APIResponse<List<Restaurant>>> response = call.execute();
-        if (response.isSuccessful()) {
+        if (response != null && response.isSuccessful()) {
             APIResponse<List<Restaurant>> apiResponse = response.body();
 
-            if (apiResponse.isSuccess()) {
+            if (apiResponse != null && apiResponse.isSuccess()) {
                 if (apiResponse.getData().size() > 0) {
-                    mRestaurantModel.handleFetchedRestaurants(apiResponse.getData(), apiResponse.getLastSyncTimestamp());
-                    List<Restaurant> newRestaurants = mRestaurantModel.getLatestRestaurants();
+                    for (Restaurant restaurant : apiResponse.getData()) {
+
+                        if (restaurant.isDeleted()) {
+                            mRestaurantModel.delete(restaurant);
+                        }
+                        else {
+                            mRestaurantModel.addNewOrUpdate(restaurant);
+                        }
+                    }
+
+                    mRestaurantModel.optimizeCached();
+
+                    List<Restaurant> newRestaurants = mRestaurantModel.getLatest();
+
                     getEventBus().post(new FetchedRestaurantEvent(true, newRestaurants));
-                    return;
                 }
                 else {
                     Log.d(TAG, "There is nothing changed");
-                    return;
                 }
-
+                mRestaurantModel.saveLatestSynchronize(latestSynchronizeTimestamp);
             }
             else {
                 getEventBus().post(new FetchedRestaurantEvent(false));
@@ -111,6 +122,6 @@ public class FetchRestaurantJob extends BasicJob {
 
     @Override
     protected int getRetryLimit() {
-        return 5;
+        return 2;
     }
 }

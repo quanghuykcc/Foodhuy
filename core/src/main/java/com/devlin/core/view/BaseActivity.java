@@ -84,6 +84,21 @@ public abstract class BaseActivity<B extends ViewDataBinding, V extends BaseView
         }
     }
 
+    protected final void register() {
+        org.greenrobot.eventbus.EventBus eventBus = org.greenrobot.eventbus.EventBus.getDefault();
+        if (!eventBus.isRegistered(this)) {
+            eventBus.register(this);
+        }
+    }
+
+    protected final void unregister() {
+        org.greenrobot.eventbus.EventBus eventBus = org.greenrobot.eventbus.EventBus.getDefault();
+        if (eventBus.isRegistered(this)) {
+            eventBus.unregister(this);
+        }
+
+    }
+
     //endregion
 
     //region Public Methods

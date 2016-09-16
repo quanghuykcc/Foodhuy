@@ -2,6 +2,7 @@ package com.devlin.core.di;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.devlin.core.model.services.clouds.ICategoryService;
+import com.devlin.core.model.services.clouds.ICommentService;
 import com.devlin.core.model.services.clouds.IFavoriteRestaurantService;
 import com.devlin.core.model.services.clouds.IRestaurantService;
 import com.devlin.core.model.services.clouds.IUserService;
@@ -85,14 +86,14 @@ public class ViewModelModule {
 
     @Provides
     @Singleton
-    RestaurantViewModel providesRestaurantViewModelViewModel(INavigator navigator, RestaurantModel restaurantStorageService, UserModel userStorageService) {
-        return new RestaurantViewModel(navigator, restaurantStorageService, userStorageService);
+    RestaurantViewModel providesRestaurantViewModelViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService iFavoriteRestaurantService) {
+        return new RestaurantViewModel(navigator, favoriteRestaurantModel, iFavoriteRestaurantService);
     }
 
     @Provides
     @Singleton
-    CommentViewModel providesCommentViewModelViewModel(INavigator navigator, RestaurantModel restaurantStorageService) {
-        return new CommentViewModel(navigator, restaurantStorageService);
+    CommentViewModel providesCommentViewModelViewModel(INavigator navigator, ICommentService commentService) {
+        return new CommentViewModel(navigator, commentService);
     }
 
     //endregion

@@ -1,5 +1,6 @@
 package com.devlin.core.model.entities;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
@@ -14,6 +15,7 @@ public class Comment extends RealmObject {
 
     //region Properties
 
+    @Expose(serialize = false)
     @SerializedName("id")
     @PrimaryKey
     private int mId;
@@ -33,6 +35,13 @@ public class Comment extends RealmObject {
     @SerializedName("deleted_at")
     private Date mDeletedAt;
 
+    @SerializedName("commenter_id")
+    private int mCommenterId;
+
+    @SerializedName("restaurant_id")
+    private int mRestaurantId;
+
+    @Expose(serialize = false)
     @SerializedName("commenter")
     private User mCommenter;
 
@@ -96,6 +105,21 @@ public class Comment extends RealmObject {
         mCommenter = commenter;
     }
 
+    public int getCommenterId() {
+        return mCommenterId;
+    }
+
+    public void setCommenterId(int commenterId) {
+        mCommenterId = commenterId;
+    }
+
+    public int getRestaurantId() {
+        return mRestaurantId;
+    }
+
+    public void setRestaurantId(int restaurantId) {
+        mRestaurantId = restaurantId;
+    }
 
     //endregion
 

@@ -67,11 +67,6 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
         notifyPropertyChanged(BR.restaurants);
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return super.getEventBus();
-    }
-
     //endregion
 
     //region Constructors
@@ -93,7 +88,8 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
     @Override
     public void onCreate() {
         super.onCreate();
-        getEventBus().register(this);
+
+        register();
         loadFirstPage();
     }
 
@@ -106,13 +102,13 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
     public void onStop() {
         super.onStop();
 
-        getEventBus().unregister(this);
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        unregister();
         mCategory = null;
         mRestaurants = null;
     }
@@ -158,14 +154,14 @@ public class RestaurantByCategoryViewModel extends BaseViewModel {
     public void showRestaurantDetails(Restaurant restaurant) {
         getNavigator().navigateTo(Constants.RESTAURANT_DETAIL_PAGE);
 
-        getEventBus().postSticky(restaurant);
+        postSticky(restaurant);
     }
 
     public void handleCommentViewClick(Restaurant restaurant) {
         if (getNavigator().getApplication().isUserLoggedIn()) {
             getNavigator().navigateTo(Constants.COMMENT_PAGE);
 
-            getEventBus().postSticky(restaurant);
+            postSticky(restaurant);
 
             return;
         }
