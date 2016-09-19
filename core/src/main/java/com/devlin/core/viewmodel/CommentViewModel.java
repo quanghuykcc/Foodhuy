@@ -121,21 +121,21 @@ public class CommentViewModel extends BaseViewModel {
 
     public void addCommentCommand() {
         if (validate()) {
-            final Comment comment = new Comment();
-            comment.setContent(mContent);
-            comment.setCommenterId(getNavigator().getApplication().getLoginUser().getId());
-            comment.setTitle("");
-            comment.setRestaurantId(mRestaurant.getId());
+           Comment newComment = initComment();
 
-            mCommentService.add(comment).enqueue(new Callback<APIResponse<Comment>>() {
+            mCommentService.add(newComment).enqueue(new Callback<APIResponse<Comment>>() {
                 @Override
                 public void onResponse(Call<APIResponse<Comment>> call, Response<APIResponse<Comment>> response) {
                     if (response != null && response.isSuccessful()
                             && response.body() != null
                             && response.body().isSuccess()) {
-                        post(comment);
+                        post(response.body().getData());
+
                     }
-                    showToast("Viết bình luận thất bại, vui lòng kiểm tra lại kết nối mạng", Toast.LENGTH_LONG);
+                    else {
+                        showToast("Viết bình luận thất bại, vui lòng kiểm tra lại kết nối mạng", Toast.LENGTH_LONG);
+                    }
+
 
                 }
 
@@ -160,4 +160,15 @@ public class CommentViewModel extends BaseViewModel {
 
     //endregion
 
+    //region Private methods
+
+    private Comment initComment() {
+        Comment comment = new Comment();
+        comment.setContent(mContent);
+        comment.setCommenterId(getNavigator().getApplication().getLoginUser().getId());
+        comment.setRestaurantId(mRestaurant.getId());
+        return comment;
+    }
+
+    //endregion
 }

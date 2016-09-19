@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 
+import com.devlin.core.event.ShowRestaurantsByCategoryEvent;
 import com.devlin.core.model.entities.Category;
 import com.devlin.core.view.BaseActivity;
 import com.devlin.core.view.Constants;
@@ -33,12 +34,6 @@ import org.greenrobot.eventbus.ThreadMode;
 ;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewModel> implements NavigationView.OnNavigationItemSelectedListener {
-
-    //region Properties
-
-    private static final String TAG = "MainActivity";
-
-    //endregion
 
     //region Lifecycle
 
@@ -141,7 +136,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewMode
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onEvent(Category data) {
+    public void onEvent(ShowRestaurantsByCategoryEvent event) {
         addFragment(new RestaurantByCategoryFragment());
     }
 

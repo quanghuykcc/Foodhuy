@@ -52,7 +52,7 @@
                     android:padding="10dp"
                     android:inputType="textEmailAddress"
                     android:textSize="15sp"
-                    android:text="@={viewModel.user.email}"
+                    android:text="@={viewModel.email}"
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content"/>
 
@@ -63,7 +63,7 @@
                     android:inputType="textPassword"
                     android:padding="10dp"
                     android:textSize="13sp"
-                    android:text="@={viewModel.user.password}"
+                    android:text="@={viewModel.password}"
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content"/>
 
@@ -73,7 +73,7 @@
                     android:hint="Nhập lại mật khẩu"
                     android:padding="10dp"
                     android:textSize="13sp"
-                    android:text="@={viewModel.user.retypePassword}"
+                    android:text="@={viewModel.retypePassword}"
                     android:inputType="textPassword"
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content"/>
@@ -83,7 +83,7 @@
                     android:background="#ffffff"
                     android:hint="Tên hiển thị"
                     android:padding="10dp"
-                    android:text="@={viewModel.user.userName}"
+                    android:text="@={viewModel.name}"
                     android:textSize="15sp"
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content"/>
@@ -94,7 +94,7 @@
                     android:text="Đăng ký"
                     android:textColor="#ffffff"
                     android:textStyle="bold"
-                    android:onClick="@{() -> viewModel.registerUser(viewModel.user)}"
+                    android:onClick="@{() -> viewModel.registerCommand()}"
                     android:textSize="18sp"
                     android:background="#3B7FC4"
                     android:layout_below="@+id/linearLayout"

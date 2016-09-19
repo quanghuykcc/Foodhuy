@@ -14,10 +14,6 @@ public class FetchedRestaurantEvent {
 
     private String mMessage;
 
-    public FetchedRestaurantEvent(boolean success) {
-        mSuccess = success;
-    }
-
     public FetchedRestaurantEvent(boolean success, List<Restaurant> restaurants) {
         mSuccess = success;
         mRestaurants = restaurants;

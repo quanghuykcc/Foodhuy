@@ -4,7 +4,12 @@ import android.databinding.Bindable;
 import android.databinding.ObservableArrayList;
 import android.util.Log;
 
+import com.birbit.android.jobqueue.JobManager;
 import com.devlin.core.BR;
+import com.devlin.core.event.AddMoreRestaurantsEvent;
+import com.devlin.core.event.ReplaceRestaurantsEvent;
+import com.devlin.core.job.BasicJob;
+import com.devlin.core.job.ShowFavoriteRestaurantsJob;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.entities.User;
 import com.devlin.core.model.responses.APIResponse;
@@ -17,6 +22,8 @@ import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -31,9 +38,13 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
 
     //region Properties
 
-    private IRestaurantService mIRestaurantService;
+    private IRestaurantService mRestaurantService;
 
     private ObservableArrayList<Restaurant> mRestaurants;
+
+    private RestaurantModel mRestaurantModel;
+
+    private JobManager mJobManager;
 
     //endregion
 
@@ -54,10 +65,12 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public FavoriteRestaurantViewModel(INavigator navigator, IRestaurantService restaurantService) {
+    public FavoriteRestaurantViewModel(INavigator navigator, IRestaurantService restaurantService, RestaurantModel restaurantModel, JobManager jobManager) {
         super(navigator);
 
-        mIRestaurantService = restaurantService;
+        mRestaurantService = restaurantService;
+        mRestaurantModel = restaurantModel;
+        mJobManager = jobManager;
     }
 
     //endregion
@@ -67,7 +80,8 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
     @Override
     public void onCreate() {
         super.onCreate();
-        loadFavoriteRestaurants();
+        register();
+        loadPage(0);
     }
 
     @Override
@@ -84,77 +98,46 @@ public class FavoriteRestaurantViewModel extends BaseViewModel {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        unregister();
     }
 
     //endregion
 
-    //region Private Methods
+    //region Public methods
 
-    private void loadFavoriteRestaurants() {
-        User user = getNavigator().getApplication().getLoginUser();
-
-        mIRestaurantService.getFavoriteRestaurants(getNavigator().getApplication().getLoginUser().getId(), 0, Configuration.NUMBER_RECORDS_PER_PAGE)
-                .enqueue(new Callback<APIResponse<List<Restaurant>>>() {
-                    @Override
-                    public void onResponse(Call<APIResponse<List<Restaurant>>> call, Response<APIResponse<List<Restaurant>>> response) {
-                        if (response.isSuccessful() && response.body().isSuccess()) {
-                            setRestaurants(response.body().getData());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<APIResponse<List<Restaurant>>> call, Throwable t) {
-
-                    }
-                });
-    }
-
-    //endregion
-
-    //region Override Methods
-
-    @Override
-    public INavigator getNavigator() {
-        return super.getNavigator();
-    }
-
-    //endregion
-
-    public void showRestaurantDetails(Restaurant restaurant) {
+    public void showRestaurantDetailsCommand(Restaurant restaurant) {
         getNavigator().navigateTo(Constants.RESTAURANT_DETAIL_PAGE);
 
         postSticky(restaurant);
     }
 
-    public void handleCommentViewClick(Restaurant restaurant) {
+    public void inputCommentCommand(Restaurant restaurant) {
         if (getNavigator().getApplication().isUserLoggedIn()) {
             getNavigator().navigateTo(Constants.COMMENT_PAGE);
-
             postSticky(restaurant);
-
-            return;
         }
         else {
             getNavigator().navigateTo(Constants.LOGIN_PAGE);
         }
-
     }
 
-    public void getNextPageRestaurants(long currentOffset) {
-        long nextOffset = currentOffset + 1;
-
-        mIRestaurantService.getFavoriteRestaurants(getNavigator().getApplication().getLoginUser().getId(), nextOffset, Configuration.NUMBER_RECORDS_PER_PAGE).enqueue(new Callback<APIResponse<List<Restaurant>>>() {
-            @Override
-            public void onResponse(Call<APIResponse<List<Restaurant>>> call, Response<APIResponse<List<Restaurant>>> response) {
-                if (response.isSuccessful()) {
-                    if (response.body().isSuccess()) {
-                        mRestaurants.addAll(response.body().getData());
-                    }
-                }
-            }
-            @Override
-            public void onFailure(Call<APIResponse<List<Restaurant>>> call, Throwable t) {
-            }
-        });
+    public void loadPage(int offset) {
+        mJobManager.addJobInBackground(new ShowFavoriteRestaurantsJob(BasicJob.UI_HIGH, offset, getNavigator().getApplication().getLoginUser(), mRestaurantService, mRestaurantModel));
     }
+
+    //endregion
+
+    //region Subscribe methods
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(ReplaceRestaurantsEvent replaceRestaurantsEvent) {
+        setRestaurants(replaceRestaurantsEvent.getRestaurants());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(AddMoreRestaurantsEvent addMoreRestaurantsEvent) {
+        mRestaurants.addAll(addMoreRestaurantsEvent.getRestaurants());
+    }
+
+    //endregion
 }

@@ -22,7 +22,7 @@
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:onClick="@{() -> viewModel.showRestaurantDetails(restaurant)}"
+                    android:onClick="@{() -> viewModel.showRestaurantDetailsCommand(restaurant)}"
                     android:layout_height="wrap_content">
 
                     <RelativeLayout
@@ -95,7 +95,7 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:onClick="@{() -> viewModel.handleCommentViewClick(restaurant)}"
+                        android:onClick="@{() -> viewModel.inputCommentCommand(restaurant)}"
                         android:orientation="horizontal">
 
                         <ImageView

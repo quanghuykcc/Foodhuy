@@ -2,20 +2,16 @@ package com.devlin.core.job;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.devlin.core.event.AddedNewFavoriteEvent;
+import com.devlin.core.event.ChangeFavoriteStatusEvent;
 import com.devlin.core.model.entities.FavoriteRestaurant;
-import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.responses.APIResponse;
 import com.devlin.core.model.services.clouds.IFavoriteRestaurantService;
 import com.devlin.core.model.services.storages.FavoriteRestaurantModel;
 
-import io.realm.FavoriteRestaurantRealmProxy;
-import io.realm.Realm;
-import retrofit2.Call;
 import retrofit2.Response;
 
 /**
@@ -32,8 +28,6 @@ public class AddNewFavoriteJob extends BasicJob {
     private FavoriteRestaurant mFavoriteRestaurant;
 
     private static final String GROUP = "AddNewFavoriteJob";
-
-    private static final String TAG = "AddNewFavoriteJob";
 
     //endregion
 
@@ -59,36 +53,25 @@ public class AddNewFavoriteJob extends BasicJob {
 
     @Override
     public void onRun() throws Throwable {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        mFavoriteRestaurantModel.addNewFavoriteRestaurant(mFavoriteRestaurant);
-        realm.commitTransaction();
+        mFavoriteRestaurantModel.add(mFavoriteRestaurant);
 
-        Call<APIResponse<FavoriteRestaurant>> call = mIFavoriteRestaurantService.addNewFavoriteRestaurant(mFavoriteRestaurant);
-        Response<APIResponse<FavoriteRestaurant>> response = call.execute();
+        Response<APIResponse<FavoriteRestaurant>> response = mIFavoriteRestaurantService.add(mFavoriteRestaurant)
+                                                                                        .execute();
 
-        if (!response.isSuccessful() || !response.body().isSuccess()) {
-            getEventBus().post(new AddedNewFavoriteEvent(false));
-            deleteFavorite();
+        if (response.isSuccessful() && response.body() != null &&  response.body().isSuccess()) {
+            mFavoriteRestaurantModel.update(response.body().getData());
             return;
+        } else {
+            mFavoriteRestaurantModel.delete(mFavoriteRestaurant);
+            post(new ChangeFavoriteStatusEvent());
         }
-
-        Log.d(TAG, response.body().getData().toString());
-
-
     }
 
-    private void deleteFavorite() {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        mFavoriteRestaurantModel.deleteFavoriteRestaurant(mFavoriteRestaurant);
-        realm.commitTransaction();
-    }
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        deleteFavorite();
-        getEventBus().post(new AddedNewFavoriteEvent(false));
+        mFavoriteRestaurantModel.delete(mFavoriteRestaurant);
+        post(new ChangeFavoriteStatusEvent());
     }
 
     @Override
@@ -101,6 +84,6 @@ public class AddNewFavoriteJob extends BasicJob {
 
     @Override
     protected int getRetryLimit() {
-        return 5;
+        return 2;
     }
 }

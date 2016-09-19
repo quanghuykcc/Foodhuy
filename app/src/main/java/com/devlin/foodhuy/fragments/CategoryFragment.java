@@ -1,6 +1,5 @@
 package com.devlin.foodhuy.fragments;
 
-
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,16 +22,11 @@ import com.devlin.foodhuy.adapters.CategoryListAdapter;
 import com.devlin.foodhuy.adapters.DividerItemDecoration;
 import com.devlin.foodhuy.databinding.FragmentCategoryBinding;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class CategoryFragment extends BaseFragment<FragmentCategoryBinding, CategoryViewModel> {
 
     //region Properties
 
     private CategoryListAdapter mCategoryListAdapter;
-
-    private static final String TAG = "CategoryFragment";
 
     //endregion
 
@@ -73,18 +67,11 @@ public class CategoryFragment extends BaseFragment<FragmentCategoryBinding, Cate
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        Drawable dividerDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.divider_restaurant);
-        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(dividerDrawable);
-
         mCategoryListAdapter = new CategoryListAdapter();
         mCategoryListAdapter.setViewModel(mViewModel);
         recyclerView.setAdapter(mCategoryListAdapter);
-
         return view;
-
-
     }
-
 
     //endregion
 

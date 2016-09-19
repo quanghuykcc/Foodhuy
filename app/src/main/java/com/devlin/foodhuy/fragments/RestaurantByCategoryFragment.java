@@ -31,8 +31,6 @@ public class RestaurantByCategoryFragment extends BaseFragment<FragmentRestauran
 
     //region Properties
 
-    private static final String TAG = "RestaurantByCategoryFragment";
-
     private BindingRecyclerViewAdapter<Restaurant, RestaurantByCategoryViewModel> mRestaurantByCategoryListAdapter;
 
     //endregion
@@ -60,7 +58,7 @@ public class RestaurantByCategoryFragment extends BaseFragment<FragmentRestauran
         recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                mViewModel.getNextPageRestaurants(totalItemsCount);
+                mViewModel.loadPage(page);
             }
         });
 

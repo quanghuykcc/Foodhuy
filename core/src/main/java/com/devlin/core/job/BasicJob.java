@@ -17,8 +17,6 @@ import io.realm.Realm;
  */
 abstract public class BasicJob extends Job {
 
-    private EventBus mEventBus;
-
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({UI_HIGH, BACKGROUND})
     public @interface Priority {
@@ -37,13 +35,18 @@ abstract public class BasicJob extends Job {
             NetworkException exception = (NetworkException) throwable;
             return exception.shouldRetry();
         }
-        return true;
+        return false;
     }
 
-    protected EventBus getEventBus() {
-        if (mEventBus == null) {
-            mEventBus = EventBus.getDefault();
-        }
-        return mEventBus;
+    //region Protected methods
+
+    protected static final void post(Object event) {
+        EventBus.getDefault().post(event);
     }
+
+    protected static final void postSticky(Object event) {
+        EventBus.getDefault().postSticky(event);
+    }
+
+    //endregion
 }

@@ -38,8 +38,8 @@ public class ViewModelModule {
 
     @Provides
     @Singleton
-    public RestaurantByCategoryViewModel providesRestaurantByCategoryViewModel(INavigator navigator, IRestaurantService restaurantService) {
-        return new RestaurantByCategoryViewModel(navigator, restaurantService);
+    public RestaurantByCategoryViewModel providesRestaurantByCategoryViewModel(INavigator navigator, IRestaurantService restaurantService, RestaurantModel restaurantModel, JobManager jobManager) {
+        return new RestaurantByCategoryViewModel(navigator, restaurantService, restaurantModel, jobManager);
     }
 
     @Provides
@@ -56,8 +56,8 @@ public class ViewModelModule {
 
     @Provides
     @Singleton
-    MainViewModel providesMainViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, UserModel userModel) {
-        return new MainViewModel(navigator, favoriteRestaurantModel, userModel);
+    MainViewModel providesMainViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, UserModel userModel, JobManager jobManager) {
+        return new MainViewModel(navigator, favoriteRestaurantModel, userModel, jobManager);
     }
 
     @Provides
@@ -68,8 +68,8 @@ public class ViewModelModule {
 
     @Provides
     @Singleton
-    RegisterViewModel providesRegisterViewModel(INavigator navigator, IUserService userService) {
-        return new RegisterViewModel(navigator, userService);
+    RegisterViewModel providesRegisterViewModel(INavigator navigator, IUserService userService, JobManager jobManager) {
+        return new RegisterViewModel(navigator, userService, jobManager);
     }
 
     @Provides
@@ -80,14 +80,14 @@ public class ViewModelModule {
 
     @Provides
     @Singleton
-    FavoriteRestaurantViewModel providesFavoriteRestaurantViewModel(INavigator navigator, IRestaurantService restaurantService) {
-        return new FavoriteRestaurantViewModel(navigator, restaurantService);
+    FavoriteRestaurantViewModel providesFavoriteRestaurantViewModel(INavigator navigator, IRestaurantService restaurantService, RestaurantModel restaurantModel, JobManager jobManager) {
+        return new FavoriteRestaurantViewModel(navigator, restaurantService, restaurantModel, jobManager);
     }
 
     @Provides
     @Singleton
-    RestaurantViewModel providesRestaurantViewModelViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService iFavoriteRestaurantService) {
-        return new RestaurantViewModel(navigator, favoriteRestaurantModel, iFavoriteRestaurantService);
+    RestaurantViewModel providesRestaurantViewModelViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService iFavoriteRestaurantService, JobManager jobManager) {
+        return new RestaurantViewModel(navigator, favoriteRestaurantModel, iFavoriteRestaurantService, jobManager);
     }
 
     @Provides

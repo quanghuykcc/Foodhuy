@@ -47,6 +47,7 @@
                         android:scaleType="centerCrop"
                         android:layout_margin="16dp"
                         android:layout_gravity="bottom|right"
+                        android:onClick="@{() -> viewModel.changeFavoriteStatusCommand()}"
                         android:background="@{viewModel.isFavorite ? @drawable/ic_favorite_active : @drawable/ic_favorite_not_active}"/>
                 </FrameLayout>
 

@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:text="@{comment.commenter.userName}"
+                android:text="@{comment.commenter.name}"
                 android:textColor="#333333"
                 android:layout_marginBottom="5dp"
                 android:textSize="13sp"

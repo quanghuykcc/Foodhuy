@@ -23,15 +23,11 @@ public class User extends RealmObject {
     private int mId;
 
     @SerializedName("name")
-    private String mUserName;
+    private String mName;
 
     @Ignore
     @SerializedName("password")
     private String mPassword;
-
-    @Ignore
-    @Expose
-    private String mRetypePassword;
 
     @SerializedName("email")
     private String mEmail;
@@ -48,21 +44,9 @@ public class User extends RealmObject {
     @SerializedName("deleted_at")
     private Date mDeletedAt;
 
-    @Expose
-    @SerializedName("favorite_restaurants")
-    private RealmList<Restaurant> mFavoriteRestaurant;
-
     //endregion
 
     //region Getter and Setter
-
-    public RealmList<Restaurant> getFavoriteRestaurant() {
-        return mFavoriteRestaurant;
-    }
-
-    public void setFavoriteRestaurant(RealmList<Restaurant> favoriteRestaurant) {
-        mFavoriteRestaurant = favoriteRestaurant;
-    }
 
     public int getId() {
         return mId;
@@ -72,12 +56,12 @@ public class User extends RealmObject {
         mId = id;
     }
 
-    public String getUserName() {
-        return mUserName;
+    public String getName() {
+        return mName;
     }
 
-    public void setUserName(String userName) {
-        mUserName = userName;
+    public void setName(String name) {
+        mName = name;
     }
 
     public String getPassword() {
@@ -120,14 +104,6 @@ public class User extends RealmObject {
         mDeletedAt = deletedAt;
     }
 
-    public String getRetypePassword() {
-        return mRetypePassword;
-    }
-
-    public void setRetypePassword(String retypePassword) {
-        mRetypePassword = retypePassword;
-    }
-
     public String getRemmemberToken() {
         return mRemmemberToken;
     }
@@ -151,16 +127,13 @@ public class User extends RealmObject {
     @Override
     public String toString() {
         return "User{" +
-                "mId='" + mId + '\'' +
-                ", mUserName='" + mUserName + '\'' +
+                "mId=" + mId +
+                ", mName='" + mName + '\'' +
                 ", mPassword='" + mPassword + '\'' +
                 ", mEmail='" + mEmail + '\'' +
-                ", mCreatedAt=" + mCreatedAt +
-                ", mUpdatedAt=" + mUpdatedAt +
-                ", mDeletedAt=" + mDeletedAt +
+                ", mRemmemberToken='" + mRemmemberToken + '\'' +
                 '}';
     }
-
 
     //endregion
 

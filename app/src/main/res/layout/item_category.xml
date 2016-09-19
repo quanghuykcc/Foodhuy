@@ -16,7 +16,7 @@
         card_view:cardUseCompatPadding="true"
         card_view:cardCornerRadius="4dp"
         android:foreground="?attr/selectableItemBackground"
-        android:onClick="@{() -> viewModel.showRestaurantsByCategory(category)}"
+        android:onClick="@{() -> viewModel.showRestaurantsByCategoryCommand(category)}"
         android:layout_height="wrap_content">
 
         <LinearLayout

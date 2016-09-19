@@ -17,7 +17,7 @@ public final class Configuration {
 
     public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    public static final long NUMBER_RECORDS_PER_PAGE = 20;
+    public static final int NUMBER_RECORDS_PER_PAGE = 20;
 
     public static final int NUMBER_CACHE_RESTAURANTS = 30;
 }

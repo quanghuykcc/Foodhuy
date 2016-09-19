@@ -18,9 +18,11 @@ import io.realm.RealmResults;
  */
 public class CategoryModel extends BaseModel {
 
+    //region Properties
+
     private static final String CATEGORY_TABLE_NAME = "Category";
 
-    private static final String TAG = "CategoryModel";
+    //endregion
 
     //region Constructors
 
@@ -30,27 +32,16 @@ public class CategoryModel extends BaseModel {
 
     //endregion
 
-    public RealmResults<Category> getAll() {
+    //region Public methods
+
+    public List<Category> getAll() {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Category> categories = realm.where(Category.class).findAll();
-        return categories;
+        List<Category> detachedCategories = realm.copyFromRealm(categories);
+        return detachedCategories;
     }
 
-    public void getAllAsync(final ICallback<RealmResults<Category>> callback) {
-        final Realm realm = Realm.getDefaultInstance();
-
-        final RealmResults<Category> categories = realm.where(Category.class).findAllAsync();
-        categories.addChangeListener(new RealmChangeListener<RealmResults<Category>>() {
-            @Override
-            public void onChange(RealmResults<Category> element) {
-                callback.onResult(element);
-                categories.removeChangeListener(this);
-            }
-        });
-    }
-
-
-    public Date getLatestSynchronize() {
+    public Date getLastSyncAt() {
         Realm realm = Realm.getDefaultInstance();
 
         SyncHistory syncHistory = realm.where(SyncHistory.class).equalTo("mNameTable", CATEGORY_TABLE_NAME).findFirst();
@@ -71,7 +62,7 @@ public class CategoryModel extends BaseModel {
         realm.commitTransaction();
     }
 
-    public void saveLatestSynchronize(Date latestSynchronizeTimestamp) {
+    public void saveLastSyncAt(Date lastSyncAt) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
 
@@ -82,7 +73,7 @@ public class CategoryModel extends BaseModel {
             syncHistory.setNameTable(CATEGORY_TABLE_NAME);
         }
 
-        syncHistory.setLastSyncTimestamp(latestSynchronizeTimestamp);
+        syncHistory.setLastSyncTimestamp(lastSyncAt);
 
         realm.commitTransaction();
     }
@@ -98,4 +89,6 @@ public class CategoryModel extends BaseModel {
 
         realm.commitTransaction();
     }
+
+    //endregion
 }

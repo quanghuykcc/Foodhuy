@@ -4,7 +4,9 @@ import android.databinding.Bindable;
 import android.databinding.ObservableArrayList;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.devlin.core.event.AddMoreRestaurantsEvent;
 import com.devlin.core.event.FetchedRestaurantEvent;
+import com.devlin.core.event.ReplaceRestaurantsEvent;
 import com.devlin.core.job.BasicJob;
 import com.devlin.core.job.FetchRestaurantJob;
 import com.devlin.core.model.entities.Restaurant;
@@ -25,6 +27,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
+import dagger.Subcomponent;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -89,21 +92,18 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        register();
         loadInitLatestRestaurants();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
-        register();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-
         unregister();
     }
 
@@ -112,18 +112,7 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     //region Private Methods
 
     private void loadInitLatestRestaurants() {
-        mRestaurantModel.getLatestAsync(new ICallback<List<Restaurant>>() {
-            @Override
-            public void onResult(final List<Restaurant> result) {
-                setRestaurants(result);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-            }
-        });
-
-        mJobManager.addJobInBackground(new FetchRestaurantJob(BasicJob.UI_HIGH, mIRestaurantService, mRestaurantModel));
+        mJobManager.addJobInBackground(new FetchRestaurantJob(BasicJob.UI_HIGH, -1, mIRestaurantService, mRestaurantModel));
     }
 
     public void showRestaurantDetails(Restaurant restaurant) {
@@ -147,22 +136,8 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     }
 
 
-    public void getNextPageRestaurants(long currentOffset) {
-        long nextOffset = currentOffset + 1;
-
-        mIRestaurantService.getRestaurants(nextOffset, Configuration.NUMBER_RECORDS_PER_PAGE).enqueue(new Callback<APIResponse<List<Restaurant>>>() {
-            @Override
-            public void onResponse(Call<APIResponse<List<Restaurant>>> call, Response<APIResponse<List<Restaurant>>> response) {
-                if (response.isSuccessful()) {
-                    if (response.body().isSuccess()) {
-                        mRestaurants.addAll(response.body().getData());
-                    }
-                }
-            }
-            @Override
-            public void onFailure(Call<APIResponse<List<Restaurant>>> call, Throwable t) {
-            }
-        });
+    public void getNextPageRestaurants(int offset) {
+        mJobManager.addJobInBackground(new FetchRestaurantJob(BasicJob.UI_HIGH, offset, mIRestaurantService, mRestaurantModel));
     }
 
     //endregion
@@ -170,13 +145,13 @@ public class LatestRestaurantViewModel extends BaseViewModel {
     //region Subscribe Methods
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(FetchedRestaurantEvent fetchedRestaurantEvent) {
-        if (fetchedRestaurantEvent.isSuccess()) {
-            setRestaurants(fetchedRestaurantEvent.getRestaurants());
-        }
-        else {
+    public void event(ReplaceRestaurantsEvent replaceRestaurantsEvent) {
+        setRestaurants(replaceRestaurantsEvent.getRestaurants());
+    }
 
-        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(AddMoreRestaurantsEvent addMoreRestaurantsEvent) {
+        mRestaurants.addAll(addMoreRestaurantsEvent.getRestaurants());
     }
 
     //endregion

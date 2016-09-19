@@ -2,6 +2,7 @@ package com.devlin.core.model.services.clouds;
 
 import com.devlin.core.model.entities.FavoriteRestaurant;
 import com.devlin.core.model.responses.APIResponse;
+import com.devlin.core.util.QueryDate;
 
 import java.util.Date;
 import java.util.List;
@@ -21,14 +22,14 @@ import retrofit2.http.Query;
 public interface IFavoriteRestaurantService {
 
     @GET("/foody_api_huy/api/v1/favoriteRestaurants")
-    Call<APIResponse<List<FavoriteRestaurant>>> getFavoriteRestaurants(@Query("user_id") int userId);
+    Call<APIResponse<List<FavoriteRestaurant>>> getAll(@Query("user_id") int userId);
 
     @GET("/foody_api_huy/api/v1/favoriteRestaurants")
-    Call<APIResponse<List<FavoriteRestaurant>>> getNewFavoriteRestaurants(@Query("user_id") int userId, @Query("last_sync_timestamp") Date lastSyncTimestamp);
+    Call<APIResponse<List<FavoriteRestaurant>>> getNew(@Query("user_id") int userId, @Query("last_sync_timestamp") QueryDate lastSyncedAt);
 
     @POST("/foody_api_huy/api/v1/favoriteRestaurants")
-    Call<APIResponse<FavoriteRestaurant>> addNewFavoriteRestaurant(@Body FavoriteRestaurant favoriteRestaurant);
+    Call<APIResponse<FavoriteRestaurant>> add(@Body FavoriteRestaurant favoriteRestaurant);
 
     @DELETE("/foody_api_huy/api/v1/favoriteRestaurants/{id}")
-    Call<APIResponse<Integer>> deleteFavoriteRestaurant(@Path("id") int id);
+    Call<APIResponse<Integer>> delete(@Path("id") int id);
 }

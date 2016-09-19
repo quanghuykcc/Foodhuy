@@ -3,8 +3,12 @@ package com.devlin.core.viewmodel;
 import android.databinding.Bindable;
 import android.widget.Toast;
 
+import com.birbit.android.jobqueue.JobManager;
 import com.devlin.core.BR;
 import com.devlin.core.event.LoggedInEvent;
+import com.devlin.core.event.LoggedOutEvent;
+import com.devlin.core.job.BasicJob;
+import com.devlin.core.job.LogOutJob;
 import com.devlin.core.model.entities.User;
 import com.devlin.core.model.services.storages.FavoriteRestaurantModel;
 import com.devlin.core.model.services.storages.UserModel;
@@ -30,16 +34,20 @@ public class MainViewModel extends BaseViewModel {
 
     private UserModel mUserModel;
 
+    private JobManager mJobManager;
+
     //endregion
 
     //region Constructors
 
-    public MainViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, UserModel userModel) {
+    public MainViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, UserModel userModel, JobManager jobManager) {
         super(navigator);
 
         mFavoriteRestaurantModel = favoriteRestaurantModel;
 
         mUserModel = userModel;
+
+        mJobManager = jobManager;
     }
 
     //endregion
@@ -71,6 +79,8 @@ public class MainViewModel extends BaseViewModel {
         super.onCreate();
 
         register();
+
+        logInIfRemember();
     }
 
     @Override
@@ -102,21 +112,38 @@ public class MainViewModel extends BaseViewModel {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(LoggedOutEvent loggedOutEvent) {
+        if (loggedOutEvent.isSuccess()) {
+            setUser(null);
+            getNavigator().getApplication().setLoginUser(null);
+            getNavigator().navigateTo(Constants.LOGIN_PAGE);
+            showToast(loggedOutEvent.getMessage(), Toast.LENGTH_LONG);
+
+        }
+        else {
+            showToast(loggedOutEvent.getMessage(), Toast.LENGTH_LONG);
+        }
+    }
+
+    //endregion
+
+    //region Public methods
+
     public void logOut() {
         if (!getNavigator().getApplication().isUserLoggedIn()) {
             Toast.makeText(getNavigator().getApplication().getCurrentActivity(), "Bạn vẫn chưa đăng nhập", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        getNavigator().getApplication().setLoginUser(null);
-        setUser(null);
-        mFavoriteRestaurantModel.clearFavoriteRestaurantsAsync();
-        mFavoriteRestaurantModel.clearLatestSynchronizeTimestamp();
-        mUserModel.clearLocalUsers();
+        mJobManager.addJobInBackground(new LogOutJob(BasicJob.UI_HIGH, mFavoriteRestaurantModel, mUserModel, getNavigator().getApplication().getLoginUser()));
+    }
 
-        post(Constants.ACTION_LOGGED_OUT);
+    //endregion
 
-        getNavigator().navigateTo(Constants.LOGIN_PAGE);
+    //region Private methods
+
+    private void logInIfRemember() {
 
     }
 

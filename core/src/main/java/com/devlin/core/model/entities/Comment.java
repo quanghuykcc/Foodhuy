@@ -20,9 +20,6 @@ public class Comment extends RealmObject {
     @PrimaryKey
     private int mId;
 
-    @SerializedName("title")
-    private String mTitle;
-
     @SerializedName("content")
     private String mContent;
 
@@ -63,14 +60,6 @@ public class Comment extends RealmObject {
 
     public void setContent(String content) {
         mContent = content;
-    }
-
-    public String getTitle() {
-        return mTitle;
-    }
-
-    public void setTitle(String title) {
-        mTitle = title;
     }
 
     public Date getCreatedAt() {
@@ -128,7 +117,6 @@ public class Comment extends RealmObject {
     public String toString() {
         return "Comment{" +
                 "mId=" + mId +
-                ", mTitle='" + mTitle + '\'' +
                 ", mContent='" + mContent + '\'' +
                 ", mCreatedAt=" + mCreatedAt +
                 ", mUpdatedAt=" + mUpdatedAt +

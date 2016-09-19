@@ -48,7 +48,7 @@
                     android:background="#ffffff"
                     android:hint="Email"
                     android:padding="10dp"
-                    android:text="@={viewModel.user.email}"
+                    android:text="@={viewModel.email}"
                     android:textSize="15sp"
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content"/>
@@ -58,7 +58,7 @@
                     android:background="#ffffff"
                     android:hint="Password"
                     android:inputType="textPassword"
-                    android:text="@={viewModel.user.password}"
+                    android:text="@={viewModel.password}"
                     android:textSize="13sp"
                     android:padding="10dp"
                     android:layout_marginBottom="10dp"
@@ -72,7 +72,7 @@
                     android:textStyle="bold"
                     android:textSize="18sp"
                     android:background="#3B7FC4"
-                    android:onClick="@{() -> viewModel.logIn(viewModel.user)}"
+                    android:onClick="@{() -> viewModel.logInCommand()}"
                     android:layout_below="@+id/linearLayout"
                     android:layout_centerHorizontal="true"/>
 

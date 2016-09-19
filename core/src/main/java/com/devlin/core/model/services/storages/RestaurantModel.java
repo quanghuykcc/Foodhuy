@@ -2,10 +2,12 @@ package com.devlin.core.model.services.storages;
 
 import com.devlin.core.model.entities.Category;
 import com.devlin.core.model.entities.Comment;
+import com.devlin.core.model.entities.FavoriteRestaurant;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.model.entities.SyncHistory;
 import com.devlin.core.model.entities.User;
 import com.devlin.core.model.services.Configuration;
+import com.devlin.core.view.Constants;
 import com.devlin.core.view.ICallback;
 
 import java.util.ArrayList;
@@ -41,25 +43,54 @@ public class RestaurantModel extends BaseModel {
 
     //region Override Methods
 
-    public void getLatestAsync(final ICallback<List<Restaurant>> callback) {
-        final Realm realm = Realm.getDefaultInstance();
-
-        RealmResults<Restaurant> restaurants = realm.where(Restaurant.class).findAllSortedAsync("mCreatedAt", Sort.DESCENDING);
-
-        restaurants.addChangeListener(new RealmChangeListener<RealmResults<Restaurant>>() {
-            @Override
-            public void onChange(RealmResults<Restaurant> element) {
-                List<Restaurant> detachedRestaurants = realm.copyFromRealm(element);
-                callback.onResult(detachedRestaurants);
-            }
-        });
-    }
 
     public List<Restaurant> getLatest() {
         final Realm realm = Realm.getDefaultInstance();
-        RealmResults<Restaurant> restaurants = realm.where(Restaurant.class).findAllSorted("mCreatedAt", Sort.DESCENDING);
+        RealmResults<Restaurant> restaurants = realm.where(Restaurant.class).findAllSorted("mUpdatedAt", Sort.DESCENDING);
+
+        if (restaurants == null || restaurants.size() == 0) {
+            return null;
+        }
+
+        int cacheNumber = restaurants.size();
+        List<Restaurant> latestRestaurants;
+        if (cacheNumber > Configuration.NUMBER_RECORDS_PER_PAGE) {
+            latestRestaurants = restaurants.subList(0, Configuration.NUMBER_RECORDS_PER_PAGE);
+        }
+        else {
+            latestRestaurants = restaurants.subList(0, cacheNumber);
+        }
+
+        List<Restaurant> detachedRestaurants = realm.copyFromRealm(latestRestaurants);
+        return detachedRestaurants;
+    }
+
+    public List<Restaurant> getByCategory(Category category) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Restaurant> restaurants = realm.where(Restaurant.class)
+                                                    .equalTo("mCategoryId", category.getId())
+                                                    .findAllSorted("mUpdatedAt", Sort.DESCENDING);
         List<Restaurant> detachedRestaurants = realm.copyFromRealm(restaurants);
         return detachedRestaurants;
+    }
+
+    public List<Restaurant> getFavorite(User user) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<FavoriteRestaurant> favorites = realm.where(FavoriteRestaurant.class)
+                                                          .equalTo("mUserId", user.getId())
+                                                          .findAllSorted("mUpdatedAt");
+
+        List<Restaurant> restaurants = new ArrayList<>();
+        for(FavoriteRestaurant favorite : favorites) {
+            Restaurant restaurant = realm.where(Restaurant.class)
+                    .equalTo("mId", favorite.getRestaurantId())
+                    .findFirst();
+            if (restaurant != null) {
+                restaurants.add(realm.copyFromRealm(restaurant));
+            }
+        }
+
+        return restaurants;
     }
 
     public Date getLatestSynchronize() {
@@ -118,6 +149,14 @@ public class RestaurantModel extends BaseModel {
         realm.beginTransaction();
 
         realm.copyToRealmOrUpdate(restaurant);
+        realm.commitTransaction();
+    }
+
+    public void addNewOrUpdate(List<Restaurant> restaurants) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+        realm.copyToRealmOrUpdate(restaurants);
         realm.commitTransaction();
     }
 

@@ -5,12 +5,13 @@ import android.support.annotation.Nullable;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.devlin.core.event.DeletedFavoriteEvent;
+import com.devlin.core.event.ChangeFavoriteStatusEvent;
 import com.devlin.core.model.entities.FavoriteRestaurant;
+import com.devlin.core.model.responses.APIResponse;
 import com.devlin.core.model.services.clouds.IFavoriteRestaurantService;
 import com.devlin.core.model.services.storages.FavoriteRestaurantModel;
 
-import io.realm.Realm;
+import retrofit2.Response;
 
 /**
  * Created by Administrator on 9/9/2016.
@@ -19,14 +20,14 @@ public class DeleteFavoriteJob extends BasicJob {
 
     private static final String GROUP = "DeleteFavoriteJob";
     private FavoriteRestaurantModel mFavoriteRestaurantModel;
-    private IFavoriteRestaurantService mIFavoriteRestaurantService;
+    private IFavoriteRestaurantService mFavoriteRestaurantService;
     private FavoriteRestaurant mFavoriteRestaurant;
 
-    public DeleteFavoriteJob(@BasicJob.Priority int priority, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService iFavoriteRestaurantService, FavoriteRestaurant favoriteRestaurant) {
+    public DeleteFavoriteJob(@BasicJob.Priority int priority, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService favoriteRestaurantService, FavoriteRestaurant favoriteRestaurant) {
         super(new Params(priority).requireNetwork().groupBy(GROUP));
         mFavoriteRestaurant = favoriteRestaurant;
         mFavoriteRestaurantModel = favoriteRestaurantModel;
-        mIFavoriteRestaurantService = iFavoriteRestaurantService;
+        mFavoriteRestaurantService = favoriteRestaurantService;
     }
 
     @Override
@@ -36,21 +37,25 @@ public class DeleteFavoriteJob extends BasicJob {
 
     @Override
     public void onRun() throws Throwable {
+        mFavoriteRestaurantModel.delete(mFavoriteRestaurant);
 
+        Response<APIResponse<Integer>> response = mFavoriteRestaurantService.delete(mFavoriteRestaurant.getId())
+                .execute();
+
+        if (response.isSuccessful() && response.body() != null &&  response.body().isSuccess()) {
+            return;
+        } else {
+            mFavoriteRestaurantModel.add(mFavoriteRestaurant);
+            post(new ChangeFavoriteStatusEvent());
+        }
     }
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        addNewFavorite();
-        getEventBus().post(new DeletedFavoriteEvent(false));
+        mFavoriteRestaurantModel.add(mFavoriteRestaurant);
+        post(new ChangeFavoriteStatusEvent());
     }
 
-    private void addNewFavorite() {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        mFavoriteRestaurantModel.addNewFavoriteRestaurant(mFavoriteRestaurant);
-        realm.commitTransaction();
-    }
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
@@ -62,6 +67,6 @@ public class DeleteFavoriteJob extends BasicJob {
 
     @Override
     protected int getRetryLimit() {
-        return 5;
+        return 2;
     }
 }

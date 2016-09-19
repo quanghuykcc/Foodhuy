@@ -5,45 +5,36 @@ import android.support.annotation.Nullable;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.devlin.core.event.LoggedInEvent;
-import com.devlin.core.model.entities.FavoriteRestaurant;
+import com.devlin.core.event.RegisteredEvent;
 import com.devlin.core.model.entities.User;
 import com.devlin.core.model.responses.APIResponse;
 import com.devlin.core.model.services.clouds.IUserService;
-import com.devlin.core.model.services.storages.UserModel;
 
-import java.util.List;
-
-import retrofit2.Call;
 import retrofit2.Response;
 
 /**
- * Created by Administrator on 8/25/2016.
+ * Created by Administrator on 9/16/2016.
  */
-public class LogInJob extends BasicJob {
+public class RegisterJob extends BasicJob {
 
     //region Properties
 
     private IUserService mIUserService;
 
-    private UserModel mUserModel;
+    private User mRegisterUser;
 
-    private User mLogInUser;
-
-    private static final String GROUP = "LogInJob";
+    private static final String GROUP = "RegisterJob";
 
     //endregion
 
     //region Constructors
 
-    public LogInJob(@BasicJob.Priority int priority, IUserService userService, UserModel userModel, User logInUser) {
+    public RegisterJob(@BasicJob.Priority int priority, IUserService userService, User registerUser) {
         super(new Params(priority).groupBy(GROUP).requireNetwork());
 
         mIUserService = userService;
 
-        mUserModel = userModel;
-
-        mLogInUser = logInUser;
+        mRegisterUser = registerUser;
     }
 
     //endregion
@@ -57,27 +48,21 @@ public class LogInJob extends BasicJob {
 
     @Override
     public void onRun() throws Throwable {
-        Response<APIResponse<User>> response = mIUserService
-                                                .logIn(mLogInUser.getEmail(), mLogInUser.getPassword())
-                                                .execute();
+        Response<APIResponse<Boolean>> response = mIUserService
+                                    .signUp(mRegisterUser.getEmail(), mRegisterUser.getPassword(), mRegisterUser.getName())
+                                    .execute();
 
         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-            User loggedInUser = response.body().getData();
-            post(new LoggedInEvent(true, loggedInUser, null));
-
-            mUserModel.cacheLoggedInUser(loggedInUser);
-
-
-        }
-        else {
-            post(new LoggedInEvent(false, null, "Thông tin đăng nhập không chính xác"));
+            post(new RegisteredEvent(true, "Bạn đã đăng ký tài khoản Foodhuy thành công"));
+        } else {
+            post(new RegisteredEvent(false, "Xảy ra lỗi đăng ký tài khoản. Vui lòng kiểm tra kết nối mạng!"));
         }
     }
 
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        post(new LoggedInEvent(false, null, "Có lỗi trong quá trình đăng nhập! Vui lòng kiểm tra kết nối mạng"));
+        post(new RegisteredEvent(false, "Xảy ra lỗi đăng ký tài khoản. Vui lòng kiểm tra kết nối mạng"));
     }
 
     @Override

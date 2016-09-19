@@ -1,15 +1,23 @@
 package com.devlin.core.viewmodel;
 
 import android.databinding.Bindable;
+import android.util.Patterns;
 import android.widget.Toast;
 
+import com.birbit.android.jobqueue.JobManager;
 import com.devlin.core.BR;
+import com.devlin.core.event.RegisteredEvent;
+import com.devlin.core.job.BasicJob;
+import com.devlin.core.job.RegisterJob;
 import com.devlin.core.model.entities.User;
 import com.devlin.core.model.responses.APIResponse;
 import com.devlin.core.model.services.clouds.IUserService;
 import com.devlin.core.model.services.storages.UserModel;
 import com.devlin.core.view.ICallback;
 import com.devlin.core.view.INavigator;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,9 +32,17 @@ public class RegisterViewModel extends BaseViewModel {
 
     private IUserService mIUserService;
 
-    private User mUser;
-
     private String mError;
+
+    private String mEmail;
+
+    private String mPassword;
+
+    private String mRetypePassword;
+
+    private String mName;
+
+    private JobManager mJobManager;
 
     //endregion
 
@@ -38,12 +54,36 @@ public class RegisterViewModel extends BaseViewModel {
         notifyPropertyChanged(BR.error);
     }
 
-    public void setUser(User user) {
-        mUser = user;
+    public String getEmail() {
+        return mEmail;
     }
 
-    public User getUser() {
-        return mUser;
+    public void setEmail(String email) {
+        mEmail = email;
+    }
+
+    public String getPassword() {
+        return mPassword;
+    }
+
+    public void setPassword(String password) {
+        mPassword = password;
+    }
+
+    public String getRetypePassword() {
+        return mRetypePassword;
+    }
+
+    public void setRetypePassword(String retypePassword) {
+        mRetypePassword = retypePassword;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(String name) {
+        mName = name;
     }
 
     @Bindable
@@ -55,10 +95,12 @@ public class RegisterViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public RegisterViewModel(INavigator navigator, IUserService userService) {
+    public RegisterViewModel(INavigator navigator, IUserService userService, JobManager jobManager) {
         super(navigator);
 
         mIUserService = userService;
+
+        mJobManager = jobManager;
     }
 
     //endregion
@@ -68,12 +110,12 @@ public class RegisterViewModel extends BaseViewModel {
     @Override
     public void onCreate() {
         super.onCreate();
+        register();
 
-        mUser = new User();
-        mUser.setUserName("");
-        mUser.setPassword("");
-        mUser.setEmail("");
-        mUser.setRetypePassword("");
+        mEmail = "";
+        mPassword = "";
+        mRetypePassword = "";
+        mName = "";
     }
 
     @Override
@@ -89,8 +131,12 @@ public class RegisterViewModel extends BaseViewModel {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        unregister();
 
-        mUser = null;
+        mEmail = null;
+        mPassword = null;
+        mRetypePassword = null;
+        mName = null;
         mError = null;
     }
 
@@ -102,60 +148,54 @@ public class RegisterViewModel extends BaseViewModel {
         getNavigator().goBack();
     }
 
-    public boolean validateUser(User user) {
-        if (user.getEmail().trim().equals("")) {
-            setError("Chưa nhập Email");
+    public boolean validateInput() {
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
+            setError("Email không hợp lệ");
             return false;
         }
 
-        if (user.getUserName().trim().equals("")) {
-            setError("Chưa nhập tên hiển thị");
+        if (mPassword.trim().length() < 6 || mPassword.trim().length() > 50) {
+            setError("Mật khẩu phải từ 6 đến 50 ký tự");
             return false;
         }
 
-        if (user.getPassword().trim().equals("")) {
-            setError("Chưa nhập mật khẩu");
-            return false;
-        }
-
-        if (!user.getPassword().trim().equals(user.getRetypePassword().trim())) {
+        if (!mPassword.trim().equals(mRetypePassword.trim())) {
             setError("Mật khẩu và mật khẩu nhập lại không trùng");
+            return false;
+        }
+
+        if (mName.trim().length() < 6 || mName.trim().length() > 50) {
+            setError("Tên hiển thị phải từ 6 đến 50 ký tự");
             return false;
         }
 
         return true;
     }
 
-    public void registerUser(User user) {
+    public void registerCommand() {
+        if (validateInput()) {
+            getNavigator().showBusyIndicator("Đăng ký...");
 
-        if (validateUser(user)) {
-            getNavigator().showBusyIndicator("Đăng ký");
+            User user = new User();
+            user.setEmail(mEmail);
+            user.setPassword(mPassword);
+            user.setName(mName);
 
-            mIUserService.signUp(user.getEmail(), user.getPassword(), user.getUserName()).enqueue(new Callback<APIResponse<Boolean>>() {
-                @Override
-                public void onResponse(Call<APIResponse<Boolean>> call, Response<APIResponse<Boolean>> response) {
-                    if (!response.isSuccessful()) {
-                        setError("Xảy ra lỗi đăng ký tài khoản");
-                        getNavigator().hideBusyIndicator();
-                        return;
-                    } else if (!response.body().isSuccess()) {
-                        setError(response.body().getMessage());
-                        getNavigator().hideBusyIndicator();
-                        return;
-                    }
+            mJobManager.addJobInBackground(new RegisterJob(BasicJob.UI_HIGH, mIUserService, user));
+        }
+    }
 
-                    getNavigator().hideBusyIndicator();
-                    Toast.makeText(getNavigator().getApplication().getCurrentActivity(), "Bạn đã đăng ký tài khoản thành công", Toast.LENGTH_SHORT).show();
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(RegisteredEvent registeredEvent) {
+        getNavigator().hideBusyIndicator();
 
-                    getNavigator().goBack();
-                }
-
-                @Override
-                public void onFailure(Call<APIResponse<Boolean>> call, Throwable t) {
-                    setError("Xảy ra lỗi đăng ký tài khoản");
-                    getNavigator().hideBusyIndicator();
-                }
-            });
+        if (registeredEvent.isSuccess()) {
+            showToast(registeredEvent.getMessage(), Toast.LENGTH_LONG);
+            getNavigator().goBack();
+        }
+        else {
+            setError(registeredEvent.getMessage());
         }
     }
 

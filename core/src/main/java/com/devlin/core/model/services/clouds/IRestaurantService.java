@@ -17,14 +17,14 @@ import retrofit2.http.Query;
 public interface IRestaurantService {
 
     @GET("/foody_api_huy/api/v1/restaurants")
-    Call<APIResponse<List<Restaurant>>> getRestaurants(@Query("offset") long offset, @Query("limit") long limit);
+    Call<APIResponse<List<Restaurant>>> getRestaurants(@Query("offset") int offset, @Query("limit") int limit);
 
     @GET("/foody_api_huy/api/v1/restaurants")
     Call<APIResponse<List<Restaurant>>> getNewRestaurants(@Query("last_sync_timestamp") QueryDate lastSyncTimestamp);
 
     @GET("/foody_api_huy/api/v1/restaurants")
-    Call<APIResponse<List<Restaurant>>> getRestaurantsByCategory(@Query("category_id") int categoryId, @Query("offset") long offset, @Query("limit") long limit);
+    Call<APIResponse<List<Restaurant>>> getByCategory(@Query("category_id") int categoryId, @Query("offset") long offset, @Query("limit") long limit);
 
     @GET("/foody_api_huy/api/v1/restaurants")
-    Call<APIResponse<List<Restaurant>>> getFavoriteRestaurants(@Query("favorite_user_id") int favoriteUserId, @Query("offset") long offset, @Query("limit") long limit);
+    Call<APIResponse<List<Restaurant>>> getFavorite(@Query("favorite_user_id") int favoriteUserId, @Query("offset") long offset, @Query("limit") long limit);
 }

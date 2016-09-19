@@ -61,7 +61,7 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
         recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                mViewModel.getNextPageRestaurants(totalItemsCount);
+                mViewModel.getNextPageRestaurants(page);
             }
         });
 

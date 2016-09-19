@@ -31,8 +31,6 @@ public class FavoriteRestaurantFragment extends BaseFragment<FragmentFavoriteRes
 
     //region Properties
 
-    private static final String TAG = "FavoriteRestaurantFragment";
-
     private BindingRecyclerViewAdapter<Restaurant, FavoriteRestaurantViewModel> mFavoriteRestaurantListAdapter;
 
     private  RecyclerView mRecyclerView;
@@ -65,7 +63,7 @@ public class FavoriteRestaurantFragment extends BaseFragment<FragmentFavoriteRes
         mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                mViewModel.getNextPageRestaurants(totalItemsCount);
+                mViewModel.loadPage(page);
             }
         });
 
