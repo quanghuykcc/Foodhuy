@@ -19,6 +19,7 @@ import java.util.List;
 /**
  * Created by Administrator on 8/2/2016.
  */
+
 public class CategoryListAdapter extends BaseRecyclerViewAdapter<CategoryViewModel, List<Category>> {
 
     //region Override Methods

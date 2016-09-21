@@ -8,8 +8,12 @@ import com.devlin.core.BR;
 import com.devlin.core.event.LoggedInEvent;
 import com.devlin.core.event.LoggedOutEvent;
 import com.devlin.core.job.BasicJob;
+import com.devlin.core.job.FetchFavoriteJob;
+import com.devlin.core.job.LogInJob;
 import com.devlin.core.job.LogOutJob;
 import com.devlin.core.model.entities.User;
+import com.devlin.core.model.services.clouds.IFavoriteRestaurantService;
+import com.devlin.core.model.services.clouds.IUserService;
 import com.devlin.core.model.services.storages.FavoriteRestaurantModel;
 import com.devlin.core.model.services.storages.UserModel;
 import com.devlin.core.view.Constants;
@@ -36,11 +40,15 @@ public class MainViewModel extends BaseViewModel {
 
     private JobManager mJobManager;
 
+    private IUserService mUserService;
+
+    private IFavoriteRestaurantService mFavoriteRestaurantService;
+
     //endregion
 
     //region Constructors
 
-    public MainViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, UserModel userModel, JobManager jobManager) {
+    public MainViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, UserModel userModel, IUserService userService, IFavoriteRestaurantService favoriteRestaurantService, JobManager jobManager) {
         super(navigator);
 
         mFavoriteRestaurantModel = favoriteRestaurantModel;
@@ -48,6 +56,10 @@ public class MainViewModel extends BaseViewModel {
         mUserModel = userModel;
 
         mJobManager = jobManager;
+
+        mUserService = userService;
+
+        mFavoriteRestaurantService = favoriteRestaurantService;
     }
 
     //endregion
@@ -109,6 +121,8 @@ public class MainViewModel extends BaseViewModel {
         if (loggedInEvent.isSuccess()) {
             final User loggedInUser = loggedInEvent.getLoggedInUser();
             setUser(loggedInUser);
+
+            mJobManager.addJobInBackground(new FetchFavoriteJob(BasicJob.UI_HIGH, mFavoriteRestaurantModel, mFavoriteRestaurantService, loggedInEvent.getLoggedInUser()));
         }
     }
 
@@ -144,7 +158,10 @@ public class MainViewModel extends BaseViewModel {
     //region Private methods
 
     private void logInIfRemember() {
-
+        User rememberedUser = mUserModel.getRemembered();
+        if (rememberedUser != null) {
+            mJobManager.addJobInBackground(new LogInJob(BasicJob.UI_HIGH, mUserService, mUserModel, rememberedUser));
+        }
     }
 
     //endregion

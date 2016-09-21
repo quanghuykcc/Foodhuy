@@ -57,9 +57,13 @@ public class LogInJob extends BasicJob {
 
     @Override
     public void onRun() throws Throwable {
-        Response<APIResponse<User>> response = mIUserService
-                                                .logIn(mLogInUser.getEmail(), mLogInUser.getPassword())
-                                                .execute();
+        Response<APIResponse<User>> response;
+        if (mLogInUser.getRemmemberToken() != null && mLogInUser.getRemmemberToken().equals("")) {
+            response = mIUserService.logInIfRemember(mLogInUser.getRemmemberToken()).execute();
+        } else {
+            response = mIUserService.logIn(mLogInUser.getEmail(), mLogInUser.getPassword()).execute();
+        }
+
 
         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
             User loggedInUser = response.body().getData();

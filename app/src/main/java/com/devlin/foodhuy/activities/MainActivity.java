@@ -35,6 +35,12 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewModel> implements NavigationView.OnNavigationItemSelectedListener {
 
+    //region Properties
+
+    NavigationView mNavigationView;
+
+    //endregion
+
     //region Lifecycle
 
     @Override
@@ -54,16 +60,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewMode
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        NavigationView mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
 
-        NavHeaderBinding navHeaderBinding = NavHeaderBinding.inflate(LayoutInflater.from(navigationView.getContext()));
+        NavHeaderBinding navHeaderBinding = NavHeaderBinding.inflate(LayoutInflater.from(mNavigationView.getContext()));
         navHeaderBinding.setVariable(BR.viewModel, mViewModel);
-        navigationView.addHeaderView(navHeaderBinding.getRoot());
+        mNavigationView.addHeaderView(navHeaderBinding.getRoot());
         navHeaderBinding.executePendingBindings();
 
         getSupportFragmentManager().addOnBackStackChangedListener(mBackStackChangedListener);
         changeFragment(new LatestRestaurantFragment());
+        mNavigationView.setCheckedItem(R.id.nav_latest);
     }
 
     @Override
@@ -116,6 +123,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewMode
                     fragment = new FavoriteRestaurantFragment();
                 } else {
                     mViewModel.getNavigator().navigateTo(Constants.LOGIN_PAGE);
+                    return false;
                 }
                 break;
             case R.id.nav_share:

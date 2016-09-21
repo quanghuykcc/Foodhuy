@@ -4,13 +4,16 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.devlin.core.model.entities.FavoriteRestaurant;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.view.BaseFragment;
 import com.devlin.core.viewmodel.FavoriteRestaurantViewModel;
@@ -34,6 +37,8 @@ public class FavoriteRestaurantFragment extends BaseFragment<FragmentFavoriteRes
     private BindingRecyclerViewAdapter<Restaurant, FavoriteRestaurantViewModel> mFavoriteRestaurantListAdapter;
 
     private  RecyclerView mRecyclerView;
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     //endregion
 
@@ -77,6 +82,15 @@ public class FavoriteRestaurantFragment extends BaseFragment<FragmentFavoriteRes
         mFavoriteRestaurantListAdapter.setViewModel(mViewModel);
 
         mRecyclerView.setAdapter(mFavoriteRestaurantListAdapter);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mViewModel.loadPage(0);
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         return view;
     }

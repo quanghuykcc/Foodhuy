@@ -77,12 +77,27 @@ public class FavoriteRestaurantModel extends BaseModel {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
 
-        RealmResults<FavoriteRestaurant> deleteFavoriteRestaurants = realm.where(FavoriteRestaurant.class).equalTo("mUserId", favoriteRestaurant.getUserId()).equalTo("mRestaurantId", favoriteRestaurant.getRestaurantId()).findAll();
+        RealmResults<FavoriteRestaurant> deleteFavoriteRestaurants = realm
+                                .where(FavoriteRestaurant.class)
+                                .equalTo("mUserId", favoriteRestaurant.getUserId())
+                                .equalTo("mRestaurantId", favoriteRestaurant.getRestaurantId())
+                                .findAll();
         if (deleteFavoriteRestaurants.size() > 0) {
             deleteFavoriteRestaurants.deleteAllFromRealm();
         }
 
         realm.commitTransaction();
+    }
+
+    public FavoriteRestaurant find(int userId, int restaurantId) {
+        Realm realm = Realm.getDefaultInstance();
+        FavoriteRestaurant restaurant = realm
+                .where(FavoriteRestaurant.class)
+                .equalTo("mUserId", userId)
+                .equalTo("mRestaurantId", restaurantId)
+                .findFirst();
+
+        return (restaurant != null) ? realm.copyFromRealm(restaurant) : null;
     }
 
     public void addNewOrUpdate(FavoriteRestaurant favoriteRestaurant) {

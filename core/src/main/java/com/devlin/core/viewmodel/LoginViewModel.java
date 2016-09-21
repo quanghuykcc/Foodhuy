@@ -35,10 +35,6 @@ public class LoginViewModel extends BaseViewModel {
 
     private JobManager mJobManager;
 
-    private FavoriteRestaurantModel mFavoriteRestaurantModel;
-
-    private IFavoriteRestaurantService mIFavoriteRestaurantService;
-
     private String mError;
 
     private String mPassword;
@@ -80,7 +76,7 @@ public class LoginViewModel extends BaseViewModel {
 
     //region Constructors
 
-    public LoginViewModel(INavigator navigator, UserModel userModel, IUserService userService, JobManager jobManager, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService iFavoriteRestaurantService) {
+    public LoginViewModel(INavigator navigator, UserModel userModel, IUserService userService, JobManager jobManager) {
         super(navigator);
 
         mUserModel = userModel;
@@ -88,10 +84,6 @@ public class LoginViewModel extends BaseViewModel {
         mIUserService = userService;
 
         mJobManager = jobManager;
-
-        mFavoriteRestaurantModel = favoriteRestaurantModel;
-
-        mIFavoriteRestaurantService = iFavoriteRestaurantService;
     }
 
     //endregion
@@ -177,7 +169,6 @@ public class LoginViewModel extends BaseViewModel {
         if (loggedInEvent.isSuccess()) {
             getNavigator().getApplication().setLoginUser(loggedInEvent.getLoggedInUser());
             getNavigator().hideBusyIndicator();
-            mJobManager.addJobInBackground(new FetchFavoriteJob(BasicJob.UI_HIGH, mFavoriteRestaurantModel, mIFavoriteRestaurantService, loggedInEvent.getLoggedInUser()));
             getNavigator().goBack();
         }
 

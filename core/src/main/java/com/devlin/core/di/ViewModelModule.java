@@ -56,14 +56,14 @@ public class ViewModelModule {
 
     @Provides
     @Singleton
-    MainViewModel providesMainViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, UserModel userModel, JobManager jobManager) {
-        return new MainViewModel(navigator, favoriteRestaurantModel, userModel, jobManager);
+    MainViewModel providesMainViewModel(INavigator navigator, FavoriteRestaurantModel favoriteRestaurantModel, UserModel userModel, IUserService userService, IFavoriteRestaurantService favoriteRestaurantService, JobManager jobManager) {
+        return new MainViewModel(navigator, favoriteRestaurantModel, userModel, userService, favoriteRestaurantService, jobManager);
     }
 
     @Provides
     @Singleton
-    LoginViewModel providesLoginViewModel(INavigator navigator, UserModel userModel, IUserService userService, JobManager jobManager, FavoriteRestaurantModel favoriteRestaurantModel, IFavoriteRestaurantService iFavoriteRestaurantService) {
-        return new LoginViewModel(navigator, userModel, userService, jobManager, favoriteRestaurantModel, iFavoriteRestaurantService);
+    LoginViewModel providesLoginViewModel(INavigator navigator, UserModel userModel, IUserService userService, JobManager jobManager) {
+        return new LoginViewModel(navigator, userModel, userService, jobManager);
     }
 
     @Provides

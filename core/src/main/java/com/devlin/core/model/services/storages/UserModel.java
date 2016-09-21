@@ -47,6 +47,16 @@ public class UserModel extends BaseModel {
         realm.commitTransaction();
     }
 
+    public User getRemembered() {
+        Realm realm = Realm.getDefaultInstance();
+        User user = realm.where(User.class).findFirst();
+        if (user != null) {
+            return realm.copyFromRealm(user);
+        } else {
+            return null;
+        }
+    }
+
     //endregion
 
 }

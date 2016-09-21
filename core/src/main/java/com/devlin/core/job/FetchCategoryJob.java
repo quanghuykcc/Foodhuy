@@ -26,8 +26,6 @@ public class FetchCategoryJob extends BasicJob {
 
     private CategoryModel mCategoryModel;
 
-    private static final String TAG = "FetchCategoryJob";
-
     private static final String GROUP = "FetchCategoryJob";
 
     //endregion

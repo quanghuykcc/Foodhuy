@@ -14,7 +14,9 @@
 
     </style>
 
-    <style name="AppTheme.Splash">
+    <style name="Splash" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <item name="android:windowBackground">@drawable/bg_splash</item>
     </style>
 

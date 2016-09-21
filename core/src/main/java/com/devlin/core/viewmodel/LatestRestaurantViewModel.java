@@ -111,7 +111,7 @@ public class LatestRestaurantViewModel extends BaseViewModel {
 
     //region Private Methods
 
-    private void loadInitLatestRestaurants() {
+    public void loadInitLatestRestaurants() {
         mJobManager.addJobInBackground(new FetchRestaurantJob(BasicJob.UI_HIGH, -1, mIRestaurantService, mRestaurantModel));
     }
 

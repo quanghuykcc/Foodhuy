@@ -37,6 +37,8 @@ public class DeleteFavoriteJob extends BasicJob {
 
     @Override
     public void onRun() throws Throwable {
+        mFavoriteRestaurant = mFavoriteRestaurantModel.find(mFavoriteRestaurant.getUserId(), mFavoriteRestaurant.getRestaurantId());
+
         mFavoriteRestaurantModel.delete(mFavoriteRestaurant);
 
         Response<APIResponse<Integer>> response = mFavoriteRestaurantService.delete(mFavoriteRestaurant.getId())

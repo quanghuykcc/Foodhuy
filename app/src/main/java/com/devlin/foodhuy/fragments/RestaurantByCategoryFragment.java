@@ -4,12 +4,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.view.BaseFragment;
@@ -32,6 +34,8 @@ public class RestaurantByCategoryFragment extends BaseFragment<FragmentRestauran
     //region Properties
 
     private BindingRecyclerViewAdapter<Restaurant, RestaurantByCategoryViewModel> mRestaurantByCategoryListAdapter;
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     //endregion
 
@@ -72,6 +76,15 @@ public class RestaurantByCategoryFragment extends BaseFragment<FragmentRestauran
         mRestaurantByCategoryListAdapter = new BindingRecyclerViewAdapter<Restaurant, RestaurantByCategoryViewModel>(new CompositeItemBinder<Restaurant>(new RestaurantBinder(BR.restaurant, R.layout.item_restaurant_by_category)), null);
         mRestaurantByCategoryListAdapter.setViewModel(mViewModel);
         recyclerView.setAdapter(mRestaurantByCategoryListAdapter);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mViewModel.loadPage(0);
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         return view;
     }

@@ -8,4 +8,6 @@
 
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorTextPrimary">#333333</color>
+    <color name="colorBackgroundSplash">#BA68C8</color>
+    <color name="colorBlack">#000000</color>
 </resources>

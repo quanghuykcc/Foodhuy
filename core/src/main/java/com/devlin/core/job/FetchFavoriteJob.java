@@ -73,6 +73,7 @@ public class FetchFavoriteJob extends BasicJob {
                         mFavoriteRestaurantModel.addNewOrUpdate(favoriteRestaurant);
                     }
                 }
+                mFavoriteRestaurantModel.saveLastSyncedAt(response.body().getLastSyncTimestamp());
             }
         } else {
             Response<APIResponse<List<FavoriteRestaurant>>> response = mFavoriteRestaurantService
@@ -82,6 +83,7 @@ public class FetchFavoriteJob extends BasicJob {
             if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                 mFavoriteRestaurantModel.addOrUpdate(response.body().getData());
             }
+            mFavoriteRestaurantModel.saveLastSyncedAt(response.body().getLastSyncTimestamp());
         }
 
     }

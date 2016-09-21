@@ -28,7 +28,6 @@ public class CategoryViewModel extends BaseViewModel {
 
     private CategoryModel mCategoryStorageService;
 
-
     private ICategoryService mICategoryService;
 
     private JobManager mJobManager;
@@ -102,7 +101,7 @@ public class CategoryViewModel extends BaseViewModel {
 
     //region Private methods
 
-    private void loadCategories() {
+    public void loadCategories() {
         mJobManager.addJobInBackground(new FetchCategoryJob(BasicJob.UI_HIGH, mICategoryService, mCategoryStorageService));
     }
 

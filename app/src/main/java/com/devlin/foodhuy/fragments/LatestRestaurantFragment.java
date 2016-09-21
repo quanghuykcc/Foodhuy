@@ -4,13 +4,16 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.devlin.core.event.ReplaceRestaurantsEvent;
 import com.devlin.core.model.entities.Restaurant;
 import com.devlin.core.view.BaseFragment;
 import com.devlin.core.viewmodel.LatestRestaurantViewModel;
@@ -24,6 +27,8 @@ import com.devlin.foodhuy.adapters.binder.CompositeItemBinder;
 import com.devlin.foodhuy.adapters.binder.RestaurantBinder;
 import com.devlin.foodhuy.databinding.FragmentLatestRestaurantBinding;
 
+import org.greenrobot.eventbus.Subscribe;
+
 /**
  * Created by Administrator on 8/2/2016.
  */
@@ -31,9 +36,9 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
 
     //region Properties
 
-    private static final String TAG = "LatestRestaurantFragment";
-
     private BindingRecyclerViewAdapter<Restaurant, LatestRestaurantViewModel> mLastestRestaurantListAdapter;
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     //endregion
 
@@ -78,6 +83,15 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
 
         recyclerView.setAdapter(mLastestRestaurantListAdapter);
 
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mViewModel.loadInitLatestRestaurants();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
         return view;
     }
 
@@ -97,4 +111,5 @@ public class LatestRestaurantFragment extends BaseFragment<FragmentLatestRestaur
     }
 
     //endregion
+
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
+import android.widget.Toast;
 
 import com.devlin.core.view.BaseFragment;
 import com.devlin.core.viewmodel.CategoryViewModel;
@@ -22,11 +24,15 @@ import com.devlin.foodhuy.adapters.CategoryListAdapter;
 import com.devlin.foodhuy.adapters.DividerItemDecoration;
 import com.devlin.foodhuy.databinding.FragmentCategoryBinding;
 
+import org.greenrobot.eventbus.Subscribe;
+
 public class CategoryFragment extends BaseFragment<FragmentCategoryBinding, CategoryViewModel> {
 
     //region Properties
 
     private CategoryListAdapter mCategoryListAdapter;
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     //endregion
 
@@ -43,7 +49,6 @@ public class CategoryFragment extends BaseFragment<FragmentCategoryBinding, Cate
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         App.sharedComponent().inject(this);
-
         super.onCreate(savedInstanceState);
     }
 
@@ -70,6 +75,15 @@ public class CategoryFragment extends BaseFragment<FragmentCategoryBinding, Cate
         mCategoryListAdapter = new CategoryListAdapter();
         mCategoryListAdapter.setViewModel(mViewModel);
         recyclerView.setAdapter(mCategoryListAdapter);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mViewModel.loadCategories();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
         return view;
     }
 

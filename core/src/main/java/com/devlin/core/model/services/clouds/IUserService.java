@@ -22,4 +22,8 @@ public interface IUserService {
 
     @POST("/foody_api_huy/api/v1/authenticate/sign-up")
     Call<APIResponse<Boolean>> signUp(@Query("email") String email, @Query("password") String password, @Query("name") String name);
+
+    @POST("/foody_api_huy/api/v1/authenticate/re-sign-in")
+    Call<APIResponse<User>> logInIfRemember(@Query("remember_token") String rememberToken);
+
 }
